@@ -5,7 +5,13 @@
     <artifactId>lsp-Parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>lspa.top</groupId>
   <artifactId>lsp-Mapper</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  
+    <dependencies>
+    <dependency>
+        <groupId>lspa.top</groupId>
+        <artifactId>lsp-Pojo</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

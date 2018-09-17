@@ -5,7 +5,38 @@
     <artifactId>lsp-Parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>lspa.top</groupId>
   <artifactId>lsp-Service</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  
+   <dependencies>
+        <dependency>
+            <groupId>lspa.top</groupId>
+            <artifactId>lsp-Mapper</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>lspa.top</groupId>
+            <artifactId>lsp-Common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        
+        
+        <!-- spring依赖，配置此依赖的目的是提供spring相关注解 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- mybatis依赖 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+        
+        <!-- mybatis分页插件依赖 -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+        </dependency>
+    </dependencies>
 </project>
