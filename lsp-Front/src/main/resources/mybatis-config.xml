@@ -7,7 +7,7 @@
     </settings>
     
     <typeAliases>
-        <package name="lspa.top.pojo"/>
+        <package name="top.lspa.pojo"/>
     </typeAliases>
     
     <!-- 分页插件 -->
@@ -16,7 +16,7 @@
     </plugins>
     
     <mappers>
-        <package name="lspa.top.mapper"/>
+        <package name="top.lspa.mapper"/>
     </mappers>
 
 </configuration>

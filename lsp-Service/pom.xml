@@ -38,5 +38,56 @@
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
         </dependency>
+        
+       	  <!-- test -->
+            <!-- spring-context-support 提供了对其他第三方库的内置支持，如quartz等 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <scope>test</scope>
+            </dependency>
+            <!-- spring-orm 是spring处理对象关系映射的组件，传递依赖了jdbc、tx等数据库操作有关的组件 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <scope>test</scope>
+            </dependency>
+            <!-- spring-aspects 增加了spring对面向切面编程的支持，传递依赖了aspectjweaver -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <scope>test</scope>
+            </dependency>    
+                        <!-- mybatis和spring整合 -->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <scope>test</scope>
+            </dependency>      
+            
+            <!-- mysql驱动包依赖 -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <scope>test</scope>
+            </dependency>      
+                        
+            <!-- c3p0依赖 -->
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <scope>test</scope>
+            </dependency>        
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+               <scope>test</scope>
+            </dependency>            
+                    <!-- junit -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                 <scope>test</scope>
+            </dependency>
     </dependencies>
 </project>
