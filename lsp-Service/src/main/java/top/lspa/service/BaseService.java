@@ -17,4 +17,8 @@ public class BaseService<T> {
 	public List<T> selectList() {
 		return mapper.select(null);
 	}
+	
+	public int insert(T pojo) {
+		return mapper.insert(pojo);
+	}
 }

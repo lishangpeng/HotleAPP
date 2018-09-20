@@ -9,9 +9,31 @@ public class User implements Serializable{
 	private String phoneNum;
 	private String idCard;
 	private Double lat;//经度
-	private Double lon;//纬度
+	private Double lng;//纬度
 	private Date checkInTime;
 	private Date leaveTime;
+	private String password;
+	private String passwordSalt;
+	private String city;
+	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getPasswordSalt() {
+		return passwordSalt;
+	}
+	public void setPasswordSalt(String passwordSalt) {
+		this.passwordSalt = passwordSalt;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -36,11 +58,11 @@ public class User implements Serializable{
 	public void setLat(Double lat) {
 		this.lat = lat;
 	}
-	public Double getLon() {
-		return lon;
+	public Double getLng() {
+		return lng;
 	}
-	public void setLon(Double lon) {
-		this.lon = lon;
+	public void setLng(Double lng) {
+		this.lng = lng;
 	}
 	public Date getCheckInTime() {
 		return checkInTime;

@@ -45,5 +45,10 @@
     
     
     <!-- 资源映射 -->
-    <mvc:resources location="/audios/" mapping="/audios/**" />
+    <mvc:resources location="/Images/" mapping="/images/**" />
+    <mvc:resources location="/calendar/" mapping="/calendar/**" />
+    <mvc:resources location="/dialog/" mapping="/dialog/**" />
+    <mvc:resources location="/help/" mapping="/help/**" />
+    <mvc:resources location="/Scripts/" mapping="/Scripts/**" />
+    <mvc:resources location="/styles/" mapping="/styles/**" />
 </beans>
