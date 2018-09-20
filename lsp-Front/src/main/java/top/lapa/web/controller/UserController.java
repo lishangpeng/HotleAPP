@@ -90,6 +90,45 @@ public class UserController {
 		user.setPasswordSalt(salt);
 		userService.insert(user);
 		
-		return new ModelAndView("user/login");
+		return new ModelAndView("redirect:/user/login");
+	}
+	
+	@RequestMapping(value="/login",method=RequestMethod.GET)
+	public ModelAndView loginPage() {
+		ModelAndView modelAndView = new ModelAndView("user/login");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/login",method=RequestMethod.POST)
+	public ModelAndView loginSubmit(String info,String password,HttpServletRequest req) {
+		
+		ModelAndView modelAndView = new ModelAndView("user/login");
+		User user = new User();
+		if (!CommonUtils.isPhone(info)&&!CommonUtils.isIdCard(info)) {
+			modelAndView.addObject("message", "帐号或者密码错误");
+			return modelAndView;
+		}
+		if (CommonUtils.isPhone(info)) {
+			user.setPhoneNum(info);
+		}
+		if (CommonUtils.isIdCard(info)) {
+			user.setIdCard(info);
+		}
+		
+		user = userService.selectOne(user);
+		if (user!=null) {
+			
+			if (user.getPassword().equals(CommonUtils.calculateMD5(user.getPasswordSalt()+password))) {
+				req.getSession().setAttribute("user", user);
+				return new ModelAndView("redirect:/");
+			}else {
+				modelAndView.addObject("message", "账号或者密码错误");
+				return modelAndView;
+			}
+		}else {
+			modelAndView.addObject("message", "此用户还未注册");
+			return modelAndView;
+		}
+		
 	}
 }

@@ -15,13 +15,7 @@ public class OtherController {
 	
 	@RequestMapping("/")
 	public ModelAndView index() {
-		ModelAndView modelAndView = new ModelAndView("user/index");
-		return modelAndView;
-	}
-	
-	@RequestMapping(value="/login.jsp",method=RequestMethod.GET)
-	public ModelAndView loginPage() {
-		ModelAndView modelAndView = new ModelAndView("user/login");
+		ModelAndView modelAndView = new ModelAndView("index");
 		return modelAndView;
 	}
 	
@@ -31,5 +25,6 @@ public class OtherController {
 		ImageCodeUtils.sendImageCode(req.getSession(), resp);
 		
 	}
+	
 	
 }
