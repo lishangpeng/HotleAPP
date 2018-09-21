@@ -3,7 +3,7 @@
 <%@include file="./header.jsp" %>
 <body>
  <div class="header">
- <a href="index.html" class="home">
+ <a href="<%=contxtPath %>/" class="home">
             <span class="header-icon header-icon-home"></span>
             <span class="header-name">主页</span>
 </a>
@@ -24,8 +24,25 @@
 	
     <link rel="stylesheet" type="text/css" href="<%=contxtPath %>/calendar/calendar.css" />
     <link rel="stylesheet" type="text/css" href="<%=contxtPath %>/calendar/calendar.default.css" />
+
+<script type="text/javascript">
+	$(function(){
+		
+		$("#btnGo").click(function(){
+			
+		    $.post('user/editCity', $("#city").val(), function(ajaxResult) {
+		        alert(ajaxResult.data);
+		        if (ajaxResult.status == 'success') {
+		            location.reload();
+		        }
+		    }, 'json');
+			
+		})
+	})
+
+</script>
 	
-       <div class="container width90 pt20">
+<div class="container width90 pt20">
  <form class="form-horizontal" action="HotelList.aspx" method="get" id="form1">
 <ul class="search-group unstyled">
 	  <style type="text/css">
@@ -99,11 +116,25 @@
             text-align: left;
         }
     </style>	
+    			<li class="control-group" >
+    				 <input name="city" type="text" id="city" class="width80 input " style="background: none repeat scroll 0 0 #F9F9F9;padding: 8px 0px 8px 4px;" placeholder="切换城市" />
+    				 <span class="input-group-btn">
+				        <button class="btn btn-default" type="button" id="btnGo">Go!</button>
+				     </span>
+				     <div style="height:10px"></div>
+    			</li>
+    			
+    			<li>
+    				<span class="search-icon location-icon"></span>
+				    <span class="coupon-label">选择城市：</span>
+				    <span class="coupon-input"><span style="font-size: 16px; line-height: 35px;" ><span style="color:red;font-size: 18px;">${sessionScope.user.city }</span></span></span></span>
+    			</li>
+    			    			
 				<li>
 					<div class="coupon-nav coupon-nav-style">
 						<span class="search-icon location-icon"></span>
-						<span class="coupon-label">选择城市：</span>
-					    <span class="coupon-input"> <span style="font-size: 16px; line-height: 35px;" id="cityname">全部城市</span></span>
+						<span class="coupon-label">选择市区：</span>
+					    <span class="coupon-input"> <span style="font-size: 16px; line-height: 35px;" id="cityname">全部市区</span></span>
 					</div>
                    <div class="citybox">
                       <span cityId="0">全部</span> 
@@ -111,7 +142,6 @@
                       <span cityId="773">桂林</span> 
  					  <span cityId="371">郑州</span> 
 
- 					  
                    </div>
 				</li>
 			<li>

@@ -1,16 +1,26 @@
 package top.lapa.web.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient.Builder;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import top.lsp.util.AjaxResult;
 import top.lsp.util.CommonUtils;
 import top.lsp.util.ImageCodeUtils;
 import top.lspa.pojo.User;
@@ -129,6 +139,22 @@ public class UserController {
 			modelAndView.addObject("message", "此用户还未注册");
 			return modelAndView;
 		}
+	}
+	
+	//使用sorl 查询
+	@RequestMapping("/editCity")
+	public @ResponseBody AjaxResult editCity(String city) throws SolrServerException, IOException {
+		HttpSolrClient.Builder bulider = new Builder("http://localhost:8983/solr/movies");
+		HttpSolrClient solrClient = bulider.build();
 		
+		SolrQuery query = new SolrQuery("name:"+city);
+		
+		QueryResponse resp = solrClient.query(query);
+		SolrDocumentList docLise = resp.getResults();
+		
+		SolrDocument doc = docLise.get(0);
+		String recity = (String) doc.get("name");
+		
+		//todo  直接帮第一个结果给用户更改city
 	}
 }

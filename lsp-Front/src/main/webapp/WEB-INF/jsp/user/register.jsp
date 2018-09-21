@@ -2,7 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@page import="java.util.Date"%>    
 <%@include file="../header.jsp" %>
-<script type="text/javascript" src="<%=contxtPath %>/Scripts/common.js"></script>
 <body>
  <div class="header">
  <a href="index.html" class="home">

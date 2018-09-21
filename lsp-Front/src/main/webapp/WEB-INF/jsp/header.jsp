@@ -12,7 +12,7 @@
 <meta content="yes" name="apple-mobile-web-app-capable" />
 <link href="<%=contxtPath %>/styles/bootstrap.min.css" rel="stylesheet" />
 <link href="<%=contxtPath %>/styles/NewGlobal.css" rel="stylesheet" />
-
+<script type="text/javascript" src="<%=contxtPath %>/Scripts/common.js"></script>
 <script type="text/javascript" src="<%=contxtPath %>/Scripts/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="<%=contxtPath %>/Scripts/zepto.js"></script>
 	
