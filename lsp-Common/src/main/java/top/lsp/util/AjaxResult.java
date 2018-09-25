@@ -9,6 +9,10 @@ public class AjaxResult {
     public AjaxResult() {
 
     }
+    
+    public AjaxResult(String status) {
+    	this.status = status;
+    }
 
     public AjaxResult(String status, Object data) {
         this.status = status;
@@ -21,6 +25,10 @@ public class AjaxResult {
 
     public static AjaxResult successInstance(Object data) {
         return new AjaxResult("success", data);
+    }
+    
+    public static AjaxResult successInstance() {
+        return new AjaxResult("success");
     }
 
     public String getStatus() {

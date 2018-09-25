@@ -143,18 +143,27 @@ public class UserController {
 	
 	//使用sorl 查询
 	@RequestMapping("/editCity")
-	public @ResponseBody AjaxResult editCity(String city) throws SolrServerException, IOException {
-		HttpSolrClient.Builder bulider = new Builder("http://localhost:8983/solr/movies");
+	public @ResponseBody AjaxResult editCity(String city,HttpServletRequest req) throws SolrServerException, IOException {
+		HttpSolrClient.Builder bulider = new Builder("http://localhost:8983/solr/region");
 		HttpSolrClient solrClient = bulider.build();
 		
 		SolrQuery query = new SolrQuery("name:"+city);
 		
 		QueryResponse resp = solrClient.query(query);
 		SolrDocumentList docLise = resp.getResults();
-		
+		if (docLise.isEmpty()) {
+			return AjaxResult.errorInstance("查询不到该城市");
+		}
 		SolrDocument doc = docLise.get(0);
-		String recity = (String) doc.get("name");
+		List<String> recity =  (List<String>) doc.get("name");
 		
 		//todo  直接帮第一个结果给用户更改city
+		User user = (User) req.getSession().getAttribute("user");
+		if (user==null) {
+			return AjaxResult.errorInstance("请先登录");
+		}
+		user.setCity(recity.get(0));
+		userService.updateCity(user);
+		return AjaxResult.successInstance();
 	}
 }

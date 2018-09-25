@@ -30,10 +30,11 @@
 		
 		$("#btnGo").click(function(){
 			
-		    $.post('user/editCity', $("#city").val(), function(ajaxResult) {
-		        alert(ajaxResult.data);
+		    $.post('<%=contxtPath %>/user/editCity', {city:$("#city").val()}, function(ajaxResult) {
 		        if (ajaxResult.status == 'success') {
 		            location.reload();
+		        }else{
+		        	alert(ajaxResult.data)
 		        }
 		    }, 'json');
 			

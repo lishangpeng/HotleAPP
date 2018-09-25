@@ -15,4 +15,10 @@
 		insert into t_users(phoneNum,idCard,lat,lng,checkInTime,leaveTime,city,password,passwordSalt,isDeleted)
 		values(#{phoneNum},#{idCard},#{lat},#{lng},#{checkInTime},#{leaveTime},#{city},#{password},#{passwordSalt},0)
 	</insert>
+	
+	<update id="updateCity" parameterType="User">
+		update t_users set city = #{city}
+		where id = #{id}
+	</update>
+	
 </mapper>
