@@ -1,6 +1,7 @@
 package top.lapa.web.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -144,26 +145,78 @@ public class UserController {
 	//使用sorl 查询
 	@RequestMapping("/editCity")
 	public @ResponseBody AjaxResult editCity(String city,HttpServletRequest req) throws SolrServerException, IOException {
+
 		HttpSolrClient.Builder bulider = new Builder("http://localhost:8983/solr/region");
 		HttpSolrClient solrClient = bulider.build();
-		
-		SolrQuery query = new SolrQuery("name:"+city);
-		
-		QueryResponse resp = solrClient.query(query);
-		SolrDocumentList docLise = resp.getResults();
-		if (docLise.isEmpty()) {
-			return AjaxResult.errorInstance("查询不到该城市");
+		try {
+			if (city.isEmpty()) {
+				return AjaxResult.errorInstance("城市不能为空");
+			}
+			SolrQuery query = new SolrQuery("name:"+city);
+			
+			QueryResponse resp = solrClient.query(query);
+			SolrDocumentList docLise = resp.getResults();
+			if (docLise.isEmpty()) {
+				return AjaxResult.errorInstance("查询不到该城市");
+			}
+			SolrDocument doc = docLise.get(0);
+			List<String> recity =  (List<String>) doc.get("name");
+			
+			//todo  直接帮第一个结果给用户更改city
+/*			User user = (User) req.getSession().getAttribute("user");
+			if (user==null) {
+				return AjaxResult.errorInstance("请先登录");
+			}
+			user.setCity(recity.get(0));
+			userService.updateCity(user);*/
+			return AjaxResult.successInstance(recity.get(0));
+		} finally {
+			solrClient.close();
 		}
-		SolrDocument doc = docLise.get(0);
-		List<String> recity =  (List<String>) doc.get("name");
+	}
+	
+	@RequestMapping("/changeArea")
+	public @ResponseBody AjaxResult changeArea(HttpServletRequest req,String city) throws SolrServerException, IOException {
 		
-		//todo  直接帮第一个结果给用户更改city
-		User user = (User) req.getSession().getAttribute("user");
-		if (user==null) {
-			return AjaxResult.errorInstance("请先登录");
+		HttpSolrClient.Builder bulider = new Builder("http://localhost:8983/solr/region");
+		HttpSolrClient solrClient = bulider.build();
+
+		try {
+			//todo:随着城市改变地区
+			List<Object> areaList = new ArrayList<>();
+/*			//根据城市查询城市Id
+			User user = (User) req.getSession().getAttribute("user");
+			if (user==null) {
+				return AjaxResult.errorInstance("请先登录");
+			}
+			
+			String city = user.getCity();
+			*/
+			SolrQuery query = new SolrQuery("name:"+city);
+			
+			QueryResponse resp = solrClient.query(query);
+			SolrDocumentList docLise = resp.getResults();
+			if (docLise.isEmpty()) {
+				return AjaxResult.errorInstance("查询不到该城市");
+			}
+			SolrDocument doc = docLise.get(0);
+			String cityId =  (String) doc.get("id");
+			
+			//根据城市的id查询这个城市Id的地区
+			SolrQuery queryArea = new SolrQuery("parent_id:"+cityId);
+			
+			QueryResponse resp2 = solrClient.query(queryArea);
+			SolrDocumentList lise = resp2.getResults();
+			if (lise.isEmpty()) {
+				return AjaxResult.successInstance(areaList.add("无"));
+			}
+			for(SolrDocument doc2:lise) {
+				areaList.add(doc2.get("name"));
+			}
+			
+			return AjaxResult.successInstance(areaList);
+		} finally {
+			solrClient.close();
 		}
-		user.setCity(recity.get(0));
-		userService.updateCity(user);
-		return AjaxResult.successInstance();
 	}
 }

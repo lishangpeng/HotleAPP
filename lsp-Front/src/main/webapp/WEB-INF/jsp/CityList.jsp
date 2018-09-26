@@ -27,20 +27,50 @@
 
 <script type="text/javascript">
 	$(function(){
-		
+		changeArea("${sessionScope.user.city }");
+		 $('#cityname').click(function (e) {
+	            $('.citybox').toggle();
+	     });
+
 		$("#btnGo").click(function(){
-			
+			$('#cityname').text('全部');
+			$('.citybox').css("display","block");
 		    $.post('<%=contxtPath %>/user/editCity', {city:$("#city").val()}, function(ajaxResult) {
 		        if (ajaxResult.status == 'success') {
-		            location.reload();
+		        	$("#citySpan").html('');
+		        	$("#citySpan").append(ajaxResult.data);
+		        	changeArea(ajaxResult.data);
 		        }else{
 		        	alert(ajaxResult.data)
 		        }
 		    }, 'json');
-			
 		})
 	})
-
+	
+	function bindClick(){
+        $('.citybox span').click(function (e) {
+            $('#cityname').text($(this).text());
+            $('.citybox').toggle();
+            $('#cityID').val($(this).attr("cityId"));
+        });
+	}
+	
+	function changeArea(city){
+	    $.post('<%=contxtPath %>/user/changeArea',{city:city},function(ajaxResult) {
+	        if (ajaxResult.status == 'success') {
+				$("#area").html('');
+				var list = ajaxResult.data;
+	        	for(var i=0;i<list.length;i++){
+		        	$("#area").append("<span cityId="+i+">"+list[i]+"</span>");
+	        	}
+	        	bindClick();
+	        }else{
+	        	alert(ajaxResult.data)
+	        }
+	    }, 'json');
+	}
+		
+	
 </script>
 	
 <div class="container width90 pt20">
@@ -128,7 +158,7 @@
     			<li>
     				<span class="search-icon location-icon"></span>
 				    <span class="coupon-label">选择城市：</span>
-				    <span class="coupon-input"><span style="font-size: 16px; line-height: 35px;" ><span style="color:red;font-size: 18px;">${sessionScope.user.city }</span></span></span></span>
+				    <span class="coupon-input"><span style="font-size: 16px; line-height: 35px;" ><span style="color:red;font-size: 18px;" id="citySpan">${sessionScope.user.city }</span></span></span></span>
     			</li>
     			    			
 				<li>
@@ -137,12 +167,8 @@
 						<span class="coupon-label">选择市区：</span>
 					    <span class="coupon-input"> <span style="font-size: 16px; line-height: 35px;" id="cityname">全部市区</span></span>
 					</div>
-                   <div class="citybox">
+                   <div class="citybox" id="area">
                       <span cityId="0">全部</span> 
-                      <span cityId="771">南宁</span> 
-                      <span cityId="773">桂林</span> 
- 					  <span cityId="371">郑州</span> 
-
                    </div>
 				</li>
 			<li>
@@ -216,14 +242,6 @@
                 $('#dp_start').toggle();
 
             }).highlight('ui-state-hover');
-            $('#cityname').click(function (e) {
-                $('.citybox').toggle();
-            });
-            $('.citybox span').click(function (e) {
-                $('#cityname').text($(this).text());
-                $('.citybox').toggle();
-                $('#cityID').val($(this).attr("cityId"));
-            });
             $('#dateend').click(function (e) {//展开或收起日期
                 $('#dateend').removeClass('ui-state-active');
                 var type = $(this).addClass('ui-state-active').is('#dateend') ? 'start' : 'end';

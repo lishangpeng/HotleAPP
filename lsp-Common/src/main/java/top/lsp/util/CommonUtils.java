@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class CommonUtils {
 
     public static boolean isEmpty(String str) {
@@ -84,5 +86,5 @@ public class CommonUtils {
         long day = 1000L * 60 * 60 * 24;
         return Math.abs(date1.getTime() / day - date2.getTime() / day);
     }
-
+    
 }
