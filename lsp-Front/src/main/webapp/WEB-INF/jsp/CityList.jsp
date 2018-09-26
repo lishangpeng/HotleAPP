@@ -35,8 +35,11 @@
 		$("#btnGo").click(function(){
 			$('#cityname').text('全部');
 			$('.citybox').css("display","block");
-		    $.post('<%=contxtPath %>/user/editCity', {city:$("#city").val()}, function(ajaxResult) {
+			var city = $("#cityChange").val();
+		    $.post('<%=contxtPath %>/user/editCity', {cityChange:$("#cityChange").val()}, function(ajaxResult) {
 		        if (ajaxResult.status == 'success') {
+		        	$("#city").val(city);
+		        	$("#cityChange").val('');
 		        	$("#citySpan").html('');
 		        	$("#citySpan").append(ajaxResult.data);
 		        	changeArea(ajaxResult.data);
@@ -51,7 +54,7 @@
         $('.citybox span').click(function (e) {
             $('#cityname').text($(this).text());
             $('.citybox').toggle();
-            $('#cityID').val($(this).attr("cityId"));
+            $('#cityArea').val($(this).text());
         });
 	}
 	
@@ -74,7 +77,7 @@
 </script>
 	
 <div class="container width90 pt20">
- <form class="form-horizontal" action="HotelList.aspx" method="get" id="form1">
+ <form action="<%=contxtPath %>/hotel/hotelList" method="get" id="form1">
 <ul class="search-group unstyled">
 	  <style type="text/css">
         .section {
@@ -148,7 +151,7 @@
         }
     </style>	
     			<li class="control-group" >
-    				 <input name="city" type="text" id="city" class="width80 input " style="background: none repeat scroll 0 0 #F9F9F9;padding: 8px 0px 8px 4px;" placeholder="切换城市" />
+    				 <input name="cityChange" type="text" id="cityChange" class="width80 input " style="background: none repeat scroll 0 0 #F9F9F9;padding: 8px 0px 8px 4px;" placeholder="切换城市" />
     				 <span class="input-group-btn">
 				        <button class="btn btn-default" type="button" id="btnGo">Go!</button>
 				     </span>
@@ -193,15 +196,16 @@
 				</li>
    
                 </ul>
-                 <input id="checkInDate" name="checkInDate" value="2014-04-11" type="hidden" />
-                 <input id="checkOutDate" name="checkOutDate" value="2014-04-12" type="hidden" />
-                 <input id="cityID" name="cityID" value="0" type="hidden" />
+                 <input id="checkInDate" name="checkInDate" value="2018-04-11" type="hidden" />
+                 <input id="checkOutDate" name="checkOutDate" value="2018-04-12" type="hidden" />
+                 <input id="cityArea" name="cityArea" value="全部" type="hidden" />
+                 <input id="city" name="city" value="${sessionScope.user.city}" type="hidden"/>
 <script type="text/javascript">
     (function ($, undefined) {
         $(function () {//dom ready
             var open = null, today = new Date();
-            var beginday = '2014-04-11';
-            var endday = '2014-04-12';
+            var beginday = '2018-04-11';
+            var endday = '2018-04-12';
             //设置开始时间为今天
             $('#datestart').html(beginday + '<span class="ui-icon-down"></span>');
             //设置结束事件
@@ -251,8 +255,8 @@
         });
     })(Zepto);
 </script>
-     <div class="control-group tc">
-         <button class="btn-large green button width80" style="padding-left:0px;padding-right: 0px;" ID="btnOK" ><A HREF="HotelList.aspxcheckInDate.html">立即查找</A></button>
+  <div class="control-group tc">
+         <button  class="btn-large green button width80" style="padding-left:0px;padding-right: 0px;" id="btnOK" ><span style="color:blue;">立即查找</span></button>
   </div>
   <div class="control-group tc">
          <a href="NearHotel.aspx" style="padding-left:0px;padding-right: 0px;"  class="btn-large green button width80">附近酒店</a>

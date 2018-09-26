@@ -144,15 +144,15 @@ public class UserController {
 	
 	//使用sorl 查询
 	@RequestMapping("/editCity")
-	public @ResponseBody AjaxResult editCity(String city,HttpServletRequest req) throws SolrServerException, IOException {
+	public @ResponseBody AjaxResult editCity(String cityChange,HttpServletRequest req) throws SolrServerException, IOException {
 
 		HttpSolrClient.Builder bulider = new Builder("http://localhost:8983/solr/region");
 		HttpSolrClient solrClient = bulider.build();
 		try {
-			if (city.isEmpty()) {
+			if (cityChange.isEmpty()) {
 				return AjaxResult.errorInstance("城市不能为空");
 			}
-			SolrQuery query = new SolrQuery("name:"+city);
+			SolrQuery query = new SolrQuery("name:"+cityChange);
 			
 			QueryResponse resp = solrClient.query(query);
 			SolrDocumentList docLise = resp.getResults();

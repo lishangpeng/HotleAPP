@@ -41,4 +41,10 @@ public class HotelController {
 			return new ModelAndView("user/login");
 		}
 	}
+	
+	@RequestMapping(value="/hotelList",method=RequestMethod.GET)
+	public ModelAndView hotelList() {
+		ModelAndView modelAndView = new ModelAndView("hotel/hotelList");
+		return modelAndView;
+	}
 }
