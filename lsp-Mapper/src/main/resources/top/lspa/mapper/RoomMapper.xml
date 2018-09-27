@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lspa.mapper.RoomMapper">
+    
+    <select id="select" parameterType="Room" resultType="Room">
+    	select * from t_rooms
+    	where isDeleted = false
+    	<if test="hotelId!=null">and hotelId=#{hotelId}</if>
+    </select>
+</mapper>

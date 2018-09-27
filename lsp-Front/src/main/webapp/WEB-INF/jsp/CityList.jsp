@@ -63,6 +63,10 @@
 	        if (ajaxResult.status == 'success') {
 				$("#area").html('');
 				var list = ajaxResult.data;
+				if(typeof(list.length)== "undefined"){
+					$('#cityname').text("没有下级区域");
+					$('#cityArea').val("没有下级区域");
+				}
 	        	for(var i=0;i<list.length;i++){
 		        	$("#area").append("<span cityId="+i+">"+list[i]+"</span>");
 	        	}
@@ -168,7 +172,7 @@
 					<div class="coupon-nav coupon-nav-style">
 						<span class="search-icon location-icon"></span>
 						<span class="coupon-label">选择市区：</span>
-					    <span class="coupon-input"> <span style="font-size: 16px; line-height: 35px;" id="cityname">全部市区</span></span>
+					    <span class="coupon-input"> <span style="font-size: 16px; line-height: 35px;" id="cityname">全部</span></span>
 					</div>
                    <div class="citybox" id="area">
                       <span cityId="0">全部</span> 

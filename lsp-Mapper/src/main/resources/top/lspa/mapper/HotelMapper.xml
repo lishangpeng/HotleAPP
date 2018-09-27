@@ -15,5 +15,8 @@
 			<if test="hotelName!=null">and hotelName=#{hotelName}</if>
 			<if test="address!=null">and address=#{address}</if>
 			<if test="description!=null">and description=#{description}</if>
+			<if test="city!=null"> and city like #{city}</if>
+			<if test="area!=null"> and area like #{area}</if>
 	</select>
+	
 </mapper>

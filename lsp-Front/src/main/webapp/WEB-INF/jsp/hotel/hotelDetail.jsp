@@ -1,19 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>仿格子微酒店触屏版html5手机wap旅游网站模板下载酒店正文</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" />
-<meta content="yes" name="apple-mobile-web-app-capable" />
-<link href="styles/bootstrap.min.css" rel="stylesheet" />
-<link href="styles/NewGlobal.css" rel="stylesheet" />
-
-<script type="text/javascript" src="Scripts/zepto.js"></script>
-
-</head>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@include file="../header.jsp" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <body>
  <div class="header">
- <a href="index.html" class="home">
+ <a href="<%=contxtPath %>/" class="home">
             <span class="header-icon header-icon-home"></span>
             <span class="header-name">主页</span>
 </a>
@@ -25,18 +16,18 @@
  </div>
 
         
-    <script type="text/javascript" src="calendar/touch.js"></script><!--新版zepto合并版中不包括touch.js-->
-    <script type="text/javascript" src="calendar/highlight.js"></script>
-    <script type="text/javascript" src="calendar/gmu.js"></script>
-    <script type="text/javascript" src="calendar/event.js"></script>
-    <script type="text/javascript" src="calendar/parseTpl.js"></script>
-    <script type="text/javascript" src="calendar/widget.js"></script>
-    <script type="text/javascript" src="calendar/calendar.js"></script>
-    <script type="text/javascript" src="dialog/dialog.js"></script>
-    <link rel="stylesheet" type="text/css" href="calendar/calendar.css" />
-    <link rel="stylesheet" type="text/css" href="calendar/calendar.default.css" />
-    <link rel="stylesheet" type="text/css" href="dialog/dialog.css" />
-    <link rel="stylesheet" type="text/css" href="dialog/dialog.default.css" />
+    <script type="text/javascript" src="<%=contxtPath %>/calendar/touch.js"></script><!--新版zepto合并版中不包括touch.js-->
+    <script type="text/javascript" src="<%=contxtPath %>/calendar/highlight.js"></script>
+    <script type="text/javascript" src="<%=contxtPath %>/calendar/gmu.js"></script>
+    <script type="text/javascript" src="<%=contxtPath %>/calendar/event.js"></script>
+    <script type="text/javascript" src="<%=contxtPath %>/calendar/parseTpl.js"></script>
+    <script type="text/javascript" src="<%=contxtPath %>/calendar/widget.js"></script>
+    <script type="text/javascript" src="<%=contxtPath %>/calendar/calendar.js"></script>
+    <script type="text/javascript" src="<%=contxtPath %>/dialog/dialog.js"></script>
+    <link rel="stylesheet" type="text/css" href="<%=contxtPath %>/calendar/calendar.css" />
+    <link rel="stylesheet" type="text/css" href="<%=contxtPath %>/calendar/calendar.default.css" />
+    <link rel="stylesheet" type="text/css" href="<%=contxtPath %>/dialog/dialog.css" />
+    <link rel="stylesheet" type="text/css" href="<%=contxtPath %>/dialog/dialog.default.css" />
     <style>
         .section {
             background: #f3f3f3;
@@ -131,12 +122,12 @@
 </ul>
  <div id="BookRoom" class="tab-pane active fade in">   
 <div class="detail-address-bar">
-	<img alt="" src="images/location_icon.png">
-	<p>秀灵路55号（出入境管理局旁）</p>
+	<img alt="" src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/map.jpg">
+	<p>${hotel.address}</p>
 </div>     
 <div id="datetab" class="detail-time-bar">
-	<img alt="" src="images/calendar.png">
-	<p>04月11日 - 04月12日</p>
+	<img alt="" src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/calendar.jpg">
+	<p>${checkInDate } - ${checkOutDate }</p>
    <span class="icon-down"></span>
 </div>  
 <form action="hotel.aspx" method="get">
@@ -179,8 +170,8 @@
          
            
             var open = null, today = new Date();
-            var beginday = '2014-4-11';
-            var endday = '2014-4-12';
+            var beginday = '${checkInDate}';
+            var endday = '${checkOutDate}';
             //设置开始时间为今天
             $('#datestart').html(beginday + '<span class="ui-icon-down"></span>');
 
@@ -259,72 +250,30 @@
     })(Zepto);
 </script>
 <ul class="unstyled roomlist">
-     
-        <li>
-        <div class="roomtitle">
-        <div class="roomname">上下铺</div>
-          
-        <div class="fr">
-          <em class="orange roomprice">
-              ￥134 起
-         </em>
+ 	<c:forEach items="${roomList }" var="room">  		
+	     <li>
+	        <div class="roomtitle">
+	        <div class="roomname">${room.roomName }</div>
+	          
+	        <div class="fr">
+	          <em class="orange roomprice">
+	              ￥${room.price } 起
+	         </em>
+	       
+			<a href='login.aspx@page=_2Forderhotel.aspx&hotelid=5&roomtype=5&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
+	
+			</div>
+	        </div>
+	        
+	                     <a class="fl roompic" bigsrc="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/298b5300-9410-49a6-954f-08924559e068.jpg">
+	                            <img title="秀灵上下铺" 
+	                         		src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/298b5300-9410-49a6-954f-08924559e068.jpg"></a>
+	                    
+	    </li>  
+ 	</c:forEach>	   
        
-		<a href='login.aspx@page=_2Forderhotel.aspx&hotelid=5&roomtype=5&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
-
-		</div>
-        </div>
-        
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201304/20130411152105m.jpg">
-                            <img title="秀灵上下铺" 
-                             src="http://www.gridinn.com/photos/201304/20130411152105s.jpg"></a>
-                    
-    </li>  
        
-        <li>
-        <div class="roomtitle">
-        <div class="roomname">榻榻米</div>
-          
-        <div class="fr">
-          <em class="orange roomprice">
-              ￥124 起
-         </em>
-       
-		<a href='login.aspx@page=_2Forderhotel.aspx&hotelid=5&roomtype=4&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
-
-		</div>
-        </div>
-        
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201311/20131107115608m.jpg">
-                            <img title="榻榻米" 
-                             src="http://www.gridinn.com/photos/201311/20131107115608s.jpg"></a>
-                    
-    </li>  
-       
-        <li>
-        <div class="roomtitle">
-        <div class="roomname">阳光房</div>
-          
-        <div class="fr">
-          <em class="orange roomprice">
-              ￥124 起
-         </em>
-       
-		<span class='btn'>满房</span>
-
-		</div>
-        </div>
-        
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201304/20130411152015m.jpg">
-                            <img title="秀灵阳光" 
-                             src="http://www.gridinn.com/photos/201304/20130411152015s.jpg"></a>
-                    
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201307/20130729222733m.jpg">
-                            <img title="阳光房" 
-                             src="http://www.gridinn.com/photos/201307/20130729222733s.jpg"></a>
-                    
-    </li>  
-       
-        <li>
+    <li>
         <div class="roomtitle">
         <div class="roomname">阁楼房</div>
           
@@ -338,39 +287,16 @@
 		</div>
         </div>
         
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201304/20130411151851m.jpg">
+                     <a class="fl roompic" bigsrc="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/298b5300-9410-49a6-954f-08924559e068.jpg">
                             <img title="秀灵阁楼" 
-                             src="http://www.gridinn.com/photos/201304/20130411151851s.jpg"></a>
+                             src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/298b5300-9410-49a6-954f-08924559e068.jpg"></a>
                     
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201307/20130729222806m.jpg">
+                     <a class="fl roompic" bigsrc="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg">
                             <img title="阁楼房" 
-                             src="http://www.gridinn.com/photos/201307/20130729222806s.jpg"></a>
+                             src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"></a>
                     
     </li>  
        
-        <li>
-        <div class="roomtitle">
-        <div class="roomname">迷你房</div>
-          
-        <div class="fr">
-          <em class="orange roomprice">
-              ￥103 起
-         </em>
-       
-		<span class='btn'>满房</span>
-
-		</div>
-        </div>
-        
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201304/20130411151945m.jpg">
-                            <img title="秀灵迷你" 
-                             src="http://www.gridinn.com/photos/201304/20130411151945s.jpg"></a>
-                    
-                     <a class="fl roompic" bigsrc="http://www.gridinn.com/photos/201307/20130729222654m.jpg">
-                            <img title="迷你房" 
-                             src="http://www.gridinn.com/photos/201307/20130729222654s.jpg"></a>
-                    
-    </li>  
           
 </ul>
 <div style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);" class="hotel-prompt">
@@ -383,19 +309,7 @@
 	</div>
 
 
-  <div class="footer">
-  <div class="gezifooter">
-      
-      <a href="login.aspx" class="ui-link">立即登陆</a> <font color="#878787">|</font> 
-       <a href="reg.aspx" class="ui-link">免费注册</a> <font color="#878787">|</font>                 
-                  
-
-       <a href="http://www.gridinn.com/@display=pc" class="ui-link">电脑版</a>
-  </div>
-  <div class="gezifooter">
-    <p style="color:#bbb;">格子微酒店连锁 &copy; 版权所有 2012-2014</p>
-  </div>
-  </div>
+<%@include file="../footer.jsp" %>
 
 </body>
 </html>

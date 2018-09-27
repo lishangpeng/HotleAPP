@@ -11,6 +11,20 @@ public class Hotel implements Serializable{
 	private String hotelName;
 	private String address;
 	private String description;
+	private String area;
+	private String imgSrc;
+	public String getArea() {
+		return area;
+	}
+	public void setArea(String area) {
+		this.area = area;
+	}
+	public String getImgSrc() {
+		return imgSrc;
+	}
+	public void setImgSrc(String imgSrc) {
+		this.imgSrc = imgSrc;
+	}
 	public Long getId() {
 		return id;
 	}
