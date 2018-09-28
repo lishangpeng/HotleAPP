@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lspa.mapper.RoomUserMapper">
+	
+	<select id="selectFirstListBySecondId" parameterType="long" resultType="Room">
+        select f.*
+        from T_RoomUsers fs left join T_Rooms f on fs.roomId=f.id
+        where f.isDeleted=false and fs.userId=#{userId}
+    </select>
+    
+    <select id="selectSecondListByFirstId" parameterType="long" resultType="User">
+        select s.*
+        from T_RoomUsers fs left join T_Users s on fs.userId = s.id
+        where s.isDeleted=false and fs.roomId=#{roomId}
+    </select>
+    
+    <select id="select" parameterType="RoomUser" resultType="RoomUser">
+    	select * from t_roomUsers
+    	where isDeleted = false
+    	<if test="userId!=null">and userId = #{userId}</if>
+    	<if test="roomId!=null">and roomId = #{roomId}</if>
+    </select>
+
+</mapper>

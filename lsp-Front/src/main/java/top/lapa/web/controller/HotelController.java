@@ -1,5 +1,11 @@
 package top.lapa.web.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import top.lsp.util.CommonUtils;
 import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Room;
+import top.lspa.pojo.RoomResult;
+import top.lspa.pojo.RoomUser;
 import top.lspa.pojo.User;
 import top.lspa.service.HotelService;
 import top.lspa.service.RoomService;
+import top.lspa.service.RoomUserService;
 
 @Controller
 @RequestMapping("/hotel")
@@ -25,6 +35,9 @@ public class HotelController {
 	
 	@Autowired
 	private RoomService roomService;
+	
+	@Autowired
+	private RoomUserService roomUserService;
 	
 	@RequestMapping(value="/list.do",method=RequestMethod.GET)
 	public ModelAndView hotelPage() {
@@ -76,7 +89,7 @@ public class HotelController {
 	}
 	
 	@RequestMapping(value="/detail",method=RequestMethod.GET)
-	public ModelAndView hotelDetail(String checkInDate,String checkOutDate,Long hotelId) {
+	public ModelAndView hotelDetail(String checkInDate,String checkOutDate,Long hotelId) throws ParseException {
 		ModelAndView modelAndView = new ModelAndView("hotel/hotelDetail");
 		modelAndView.addObject("checkInDate", checkInDate);
 		modelAndView.addObject("checkOutDate", checkOutDate);
@@ -87,6 +100,90 @@ public class HotelController {
 		
 		Hotel hotel = hotelService.selectOne(hotelId);
 		modelAndView.addObject("hotel", hotel);
+		
+		//todo 判断是否为满房
+		List<RoomResult> roomResultList = isRoomEmptyOrNot(roomList, checkInDate, checkOutDate);
+		modelAndView.addObject("roomResultList", roomResultList);
+		//todo String转化为Date并比较大小
+/*		String pattern ="yyyy-MM-dd";//格式化日期格式
+		SimpleDateFormat sf = new SimpleDateFormat(pattern);
+		Date dateIn = sf.parse(checkInDate);//把时间格式化
+		Date dateOut = sf.parse(checkOutDate);//把时间格式化
+		*/
+		
 		return modelAndView;
 	}
+	
+	/**
+	 * 
+	 * @param roomList
+	 * @return List<RoomResult> 房间号和是否满人
+	 * @throws ParseException 
+	 */
+	private List<RoomResult> isRoomEmptyOrNot(List<Room> roomList,String checkInDate,String checkOutDate) throws ParseException {
+		List<RoomResult> roomResultList = new ArrayList<>();
+		for(Room room:roomList) {
+			Long roomId = room.getId();
+			RoomUser roomUser = new RoomUser();
+			roomUser.setRoomId(roomId);
+			RoomResult roomResult = new RoomResult();
+			List<RoomUser> roomUserList = roomUserService.selectList(roomUser);
+			User user  = roomUserService.selectSecondOneByFirstId(roomId);
+			if (user==null) {
+				roomResult.setHavePeople(true);
+				roomResult.setRoomId(roomId);
+			}else {
+				
+				Date maxOut = getMaxOutDate(roomUserList);
+				Date minIn = getMinInDate(roomUserList);
+				
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+				Date dateUserin = formatter.parse(checkInDate);
+				Date dateUserout = formatter.parse(checkOutDate);
+				
+				if ((dateUserin.getTime()>maxOut.getTime())||(dateUserout.getTime()<minIn.getTime())) {
+					roomResult.setHavePeople(true);
+					roomResult.setRoomId(roomId);
+				}else {
+					roomResult.setHavePeople(false);
+					roomResult.setRoomId(roomId);
+				}
+			}
+			roomResultList.add(roomResult);
+		}
+		return roomResultList;
+	}
+	
+	private Date getMaxOutDate(List<RoomUser> roomUserList) {
+		Collections.sort(roomUserList, new Comparator<RoomUser>() {
+			@Override
+			public int compare(RoomUser o1, RoomUser o2) {
+				if (o1.getCheckOutDate().getTime() > o2.getCheckOutDate().getTime()) {
+					return -1;
+				}else if(o1.getCheckOutDate().getTime() < o2.getCheckOutDate().getTime()) {
+					return 1;
+				}else {
+					return 0;
+				}
+			}
+		});
+		return  roomUserList.get(0).getCheckOutDate();
+	}
+	
+	private Date getMinInDate(List<RoomUser> roomUserList) {
+		Collections.sort(roomUserList, new Comparator<RoomUser>() {
+			@Override
+			public int compare(RoomUser o1, RoomUser o2) {
+				if (o1.getCheckInDate().getTime() > o2.getCheckInDate().getTime()) {
+					return 1;
+				}else if(o1.getCheckInDate().getTime() < o2.getCheckInDate().getTime()) {
+					return -1;
+				}else {
+					return 0;
+				}
+			}
+		});
+		return roomUserList.get(0).getCheckInDate();
+	}
+	
 }

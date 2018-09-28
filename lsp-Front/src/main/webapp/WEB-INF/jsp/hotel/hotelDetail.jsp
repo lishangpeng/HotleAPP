@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@include file="../header.jsp" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <body>
  <div class="header">
  <a href="<%=contxtPath %>/" class="home">
@@ -250,6 +251,8 @@
     })(Zepto);
 </script>
 <ul class="unstyled roomlist">
+    
+
  	<c:forEach items="${roomList }" var="room">  		
 	     <li>
 	        <div class="roomtitle">
@@ -259,9 +262,16 @@
 	          <em class="orange roomprice">
 	              ￥${room.price } 起
 	         </em>
-	       
-			<a href='login.aspx@page=_2Forderhotel.aspx&hotelid=5&roomtype=5&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
-	
+	        <c:forEach items="${roomResultList }" var="roomResult">
+	        	<c:if test="${roomResult.roomId eq room.id }">
+	        		<c:if test="${roomResult.havePeople}">
+						<a href='login.aspx@page=_2Forderhotel.aspx&hotelid=5&roomtype=5&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
+	        		</c:if>
+	        		<c:if test="${ not roomResult.havePeople}">
+	        			<span class='btn'>满房</span>
+	        		</c:if>
+	        	</c:if>
+	        </c:forEach>
 			</div>
 	        </div>
 	        
@@ -271,33 +281,6 @@
 	                    
 	    </li>  
  	</c:forEach>	   
-       
-       
-    <li>
-        <div class="roomtitle">
-        <div class="roomname">阁楼房</div>
-          
-        <div class="fr">
-          <em class="orange roomprice">
-              ￥144 起
-         </em>
-       
-		<span class='btn'>满房</span>
-
-		</div>
-        </div>
-        
-                     <a class="fl roompic" bigsrc="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/298b5300-9410-49a6-954f-08924559e068.jpg">
-                            <img title="秀灵阁楼" 
-                             src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/298b5300-9410-49a6-954f-08924559e068.jpg"></a>
-                    
-                     <a class="fl roompic" bigsrc="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg">
-                            <img title="阁楼房" 
-                             src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"></a>
-                    
-    </li>  
-       
-          
 </ul>
 <div style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);" class="hotel-prompt">
 			<span class="hotel-prompt-title" id="digxx">特别提示</span>

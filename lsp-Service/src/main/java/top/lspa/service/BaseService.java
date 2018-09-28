@@ -65,4 +65,8 @@ public class BaseService<T> {
 		}
 		return list.get(0);
 	}
+	
+	public int delete(Long id) {
+		return mapper.delete(id);
+	}
 }
