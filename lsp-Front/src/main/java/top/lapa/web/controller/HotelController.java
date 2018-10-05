@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import top.lsp.util.AjaxResult;
 import top.lsp.util.CommonUtils;
 import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Room;
@@ -88,9 +90,18 @@ public class HotelController {
 		return modelAndView;
 	}
 	
-	@RequestMapping(value="/detail",method=RequestMethod.GET)
+/*	@RequestMapping(value="/detail",method=RequestMethod.POST)
+	public @ResponseBody AjaxResult hotelTimeChange(String checkInDate,String checkOutDate,Long hotelId) {
+		
+	}*/
+	
+	@RequestMapping(value="/detail")
 	public ModelAndView hotelDetail(String checkInDate,String checkOutDate,Long hotelId) throws ParseException {
 		ModelAndView modelAndView = new ModelAndView("hotel/hotelDetail");
+		if (checkInDate.length()>10) {
+			checkInDate = checkInDate.substring(0, 10);
+			checkOutDate = checkOutDate.substring(0, 10);
+		}
 		modelAndView.addObject("checkInDate", checkInDate);
 		modelAndView.addObject("checkOutDate", checkOutDate);
 		Room room = new Room();
@@ -110,7 +121,6 @@ public class HotelController {
 		Date dateIn = sf.parse(checkInDate);//把时间格式化
 		Date dateOut = sf.parse(checkOutDate);//把时间格式化
 		*/
-		
 		return modelAndView;
 	}
 	
@@ -186,4 +196,8 @@ public class HotelController {
 		return roomUserList.get(0).getCheckInDate();
 	}
 	
+/*	@RequestMapping(value="/timeChange")
+	public ModelAndView changeTime() {
+//		return new ModelAndView("redirect:/user/login");
+	}*/
 }

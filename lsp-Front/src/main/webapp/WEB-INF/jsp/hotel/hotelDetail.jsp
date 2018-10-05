@@ -131,7 +131,7 @@
 	<p>${checkInDate } - ${checkOutDate }</p>
    <span class="icon-down"></span>
 </div>  
-<form action="hotel.aspx" method="get">
+<form id="change" action="<%=contxtPath %>/hotel/detail" method="post">
 <div id="datebox" class="section none">
    <div class="filter clearfix">
        <p style="margin-bottom: 10px;display: block;">入住：<a id="datestart" href="javascript:void(0)"><span class="ui-icon-down"></span></a></p>
@@ -149,17 +149,23 @@
        </div>
    </div>
    <div class="result">
-       <input type="submit" class="btn" value="确定修改" />
+       <input id="timeChange" type="submit" class="btn" value="确定修改" />
        <span class="btn" id="datecancel">取消</span>
    </div>
-    <input id="id" name="id" type="hidden" value="5" />
-    <input id="CheckInDate" name="CheckInDate" type="hidden" value="2014-4-11" />
-    <input id="CheckOutDate" name="CheckOutDate" type="hidden" value="2014-4-12" />
+    <input id="hotelId" name="hotelId" type="hidden" value="${hotel.id }" />
+    <input id="checkInDate" name="checkInDate" type="hidden" value="${checkInDate }" />
+    <input id="checkOutDate" name="checkOutDate" type="hidden" value="${checkOutDate }" />
 </div>
 </form>  
 <script type="text/javascript">
     (function ($, undefined) {
         $(function () { //dom ready
+        	$("#timeChange").click(function(){
+				var checkInDate = $("#datestart").html();
+				var checkOutDate = $("#dateend").html();
+				$("#checkInDate").val(checkInDate);
+				$("#checkOutDate").val(checkOutDate);
+        	})
             $('#titleString').text($(document)[0].title);
             $('#datetab').click(function () {
                 $('#datebox').toggle();
@@ -193,10 +199,10 @@
                     $('#datepicker_wrap').height(0).children().hide();
                     //把所选日期赋值给文本
                     $('#datestart').html(dateStr + '<span class="ui-icon-down"></span>').removeClass('ui-state-active');
-                    $('#CheckInDate').val(dateStr);
+                    $('#checkInDate').val(dateStr);
 
                     $('#dateend').html($.calendar.formatDate(day1) + '<span class="ui-icon-down"></span>').removeClass('ui-state-active');
-                    $('#CheckOutDate').val($.calendar.formatDate(day1));
+                    $('#checkOutDate').val($.calendar.formatDate(day1));
                 }
             });
             $('#datepicker_end').calendar({
@@ -211,7 +217,7 @@
                     $('#datepicker_wrap').height(0).children().hide();
                     //把所选日期赋值给文本
                     $('#dateend').html(dateStr + '<span class="ui-icon-down"></span>').removeClass('ui-state-active');
-                    $('#CheckOutDate').val(dateStr);
+                    $('#checkOutDate').val(dateStr);
                 }
             });
             $('.roompic').click(function () {
@@ -265,7 +271,7 @@
 	        <c:forEach items="${roomResultList }" var="roomResult">
 	        	<c:if test="${roomResult.roomId eq room.id }">
 	        		<c:if test="${roomResult.havePeople}">
-						<a href='login.aspx@page=_2Forderhotel.aspx&hotelid=5&roomtype=5&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
+						<a href='<%=contxtPath %>/room/order?hotelid=5&roomid=5&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
 	        		</c:if>
 	        		<c:if test="${ not roomResult.havePeople}">
 	        			<span class='btn'>满房</span>
