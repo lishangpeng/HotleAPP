@@ -14,11 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import top.lsp.util.AjaxResult;
-import top.lsp.util.CommonUtils;
 import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Room;
 import top.lspa.pojo.RoomResult;

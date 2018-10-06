@@ -271,7 +271,7 @@
 	        <c:forEach items="${roomResultList }" var="roomResult">
 	        	<c:if test="${roomResult.roomId eq room.id }">
 	        		<c:if test="${roomResult.havePeople}">
-						<a href='<%=contxtPath %>/room/order?hotelid=5&roomid=5&checkInDate=2014-4-11&checkOutDate=2014-4-12' title='立即预定' class='btn btn-success iframe'>预定</a>
+						<a href='<%=contxtPath %>/room/order?hotelId=${hotel.id }&roomId=${room.id }&checkInDate=${checkInDate }&checkOutDate=${checkOutDate}' title='立即预定' class='btn btn-success iframe'>预定</a>
 	        		</c:if>
 	        		<c:if test="${ not roomResult.havePeople}">
 	        			<span class='btn'>满房</span>
