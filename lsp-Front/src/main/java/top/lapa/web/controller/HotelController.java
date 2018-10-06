@@ -193,8 +193,8 @@ public class HotelController {
 		return roomUserList.get(0).getCheckInDate();
 	}
 	
-/*	@RequestMapping(value="/timeChange")
-	public ModelAndView changeTime() {
-//		return new ModelAndView("redirect:/user/login");
-	}*/
+	@RequestMapping("/nearHotel")
+	public ModelAndView nearHotel() {
+		return new ModelAndView("map");
+	}
 }

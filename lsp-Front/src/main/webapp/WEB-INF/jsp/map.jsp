@@ -1,15 +1,22 @@
-<!DOCTYPE html>
-<html>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	String contxtPath = request.getContextPath();
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <style type="text/css">
 body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
 </style>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=CpXf96MGs8IlF4qbg0GSM0z3Frv0FlkW"></script>
-<title>根据中心点关键字周边搜索</title>
+<title>附近城市</title>
 </head>
 <body>
+<a href="javascript:history.go(-1);" class="back">
+            <span class="header-icon header-icon-return"></span>
+            <span class="header-name">返回</span>
+</a>
 <div id="allmap">
 	<iframe id="geoPage" width=0 height=0 frameborder=0  style="display:none;" scrolling="no"
 	    src="https://apis.map.qq.com/tools/geolocation?key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77&referer=myapp">

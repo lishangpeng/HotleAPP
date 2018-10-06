@@ -263,7 +263,7 @@
          <button  class="btn-large green button width80" style="padding-left:0px;padding-right: 0px;" id="btnOK" ><span style="color:blue;">立即查找</span></button>
   </div>
   <div class="control-group tc">
-         <a href="NearHotel.aspx" style="padding-left:0px;padding-right: 0px;"  class="btn-large green button width80">附近酒店</a>
+         <a href="<%=contxtPath %>/hotel/nearHotel" style="padding-left:0px;padding-right: 0px;"  class="btn-large green button width80">附近酒店</a>
   </div>
  	</form>
  </div>
