@@ -1,8 +1,12 @@
 package top.lapa.web.controller;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,9 +25,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import redis.clients.jedis.Jedis;
 import top.lsp.util.AjaxResult;
 import top.lsp.util.CommonUtils;
 import top.lsp.util.ImageCodeUtils;
+import top.lsp.util.JedisUtils;
 import top.lspa.pojo.User;
 import top.lspa.service.UserService;
 
@@ -218,5 +224,39 @@ public class UserController {
 		} finally {
 			solrClient.close();
 		}
+	}
+	
+	//创建的格式 userId=hotelId=roomId=checkInDate=checkOutDate:date=userId=hotelId=roomId=checkInDate=checkOutDate=0
+	@RequestMapping(value="/userOrder",method=RequestMethod.GET)
+	public ModelAndView userOrder(HttpServletRequest req) throws ParseException {
+		User user = (User) req.getSession().getAttribute("user");
+		if (user == null) {
+			return new ModelAndView("redirect:/user/login");
+		}
+		ModelAndView modelAndView = new ModelAndView("user/userOrder");
+		Jedis jedis = JedisUtils.getJedis();
+		String userId = Long.toString(user.getId());
+		Set<String> values = jedis.keys(userId+"=*");
+		List<String> orderList = new ArrayList<>();
+		SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd ");
+		if (values.size()>0) {
+			for(String str : values) {
+				orderList.add(str);
+			}
+			Date[] createDate = null;
+			String[] hotelId = null;
+			String[] roomId = null;
+			String[] checkInDate = null;
+			String[] checkOutDate = null;
+			for(int i=0;i<orderList.size();i++) {
+				String[] strs = orderList.get(i).split("=");
+				createDate[i] = formatter.parse(strs[0]);
+				hotelId[i] = strs[2];
+				roomId[i] = strs[3];
+				checkInDate[i] = strs[4];
+				checkOutDate[i] = strs[5];
+			}
+		}
+		return modelAndView;
 	}
 }

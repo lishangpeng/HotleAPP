@@ -3,6 +3,7 @@ package top.lsp.util;
 import java.util.List;
 import java.util.Set;
 
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -128,5 +129,8 @@ public class JedisUtils {
             }
         }
     }
-
+    
+    public synchronized static void getLock() {
+    	getJedis().set("lock", "1");
+    }
 }
