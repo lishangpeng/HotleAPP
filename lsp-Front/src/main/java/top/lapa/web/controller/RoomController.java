@@ -59,19 +59,28 @@ public class RoomController {
 			return null;
 		}else {
 			StringBuilder jValue = new StringBuilder();
-			SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd ");
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			jValue.append(formatter.format(new Date())).append("=").append(sb.toString()).append("=0");
 			String key = sb.toString().replaceAll("\\*", String.valueOf(user.getId()));
 			//1代表不存在，0代表存在，相当于锁的存在
-			
+			//sb.toString 这个key相当于一个锁 如果完成了就会把这个时间段的房间锁住
 			if (jedis.setnx(sb.toString(), "1")==1) {
 				JedisUtils.setex(key, 60*10, jValue.toString());
+				//创建订单成功，插入数据库中，方便用户查看，付款的订单需要往userroom插入一份
+				Order order = new Order();
+				order.setUserId(user.getId());
+				order.setCheckInDate(formatter.parse(checkInDate));
+				order.setCheckOutDate(formatter.parse(checkOutDate));
+				order.setHotelId(Long.parseLong(hotelId));
+				order.setRoomId(Long.parseLong(roomId));
+				order.setPayOrNot(false);
+				orderService.insert(order);
 				//todo:十分钟后查询数据库是否付款，如果没有付款就打开锁
 				Timer timer = new Timer();
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						Boolean payOrNot = selectPayOrNot(user.getId(), checkInDate, checkOutDate);
+						Boolean payOrNot = selectPayOrNot(user.getId(), checkInDate, checkOutDate,Long.parseLong(hotelId),Long.parseLong(roomId));
 						if (!payOrNot) {
 							JedisUtils.del(sb.toString());
 						}
@@ -86,13 +95,15 @@ public class RoomController {
 		return modelAndView;
 	}
 	
-	private Boolean selectPayOrNot(Long userId,String checkInDate,String checkOutDate) {
+	private Boolean selectPayOrNot(Long userId,String checkInDate,String checkOutDate,Long hotelId,Long roomId) {
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			Date in = format.parse(checkInDate);
 			Date out =  format.parse(checkOutDate);
 			
 			Order order = new Order();
+			order.setHotelId(hotelId);
+			order.setRoomId(roomId);
 			order.setCheckInDate(in);
 			order.setCheckOutDate(out);
 			order.setUserId(userId);

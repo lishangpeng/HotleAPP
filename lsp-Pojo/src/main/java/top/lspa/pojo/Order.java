@@ -7,6 +7,20 @@ public class Order implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Long userId;
+	private Long hotelId;
+	private Long roomId;
+	public Long getHotelId() {
+		return hotelId;
+	}
+	public void setHotelId(Long hotelId) {
+		this.hotelId = hotelId;
+	}
+	public Long getRoomId() {
+		return roomId;
+	}
+	public void setRoomId(Long roomId) {
+		this.roomId = roomId;
+	}
 	private Date checkInDate;
 	private Date checkOutDate;
 	private Boolean payOrNot;

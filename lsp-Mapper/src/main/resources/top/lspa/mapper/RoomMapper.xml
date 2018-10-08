@@ -5,6 +5,7 @@
     <select id="select" parameterType="Room" resultType="Room">
     	select * from t_rooms
     	where isDeleted = false
+		<if test="id!=null">and id=#{id}</if>
     	<if test="hotelId!=null">and hotelId=#{hotelId}</if>
     </select>
 </mapper>

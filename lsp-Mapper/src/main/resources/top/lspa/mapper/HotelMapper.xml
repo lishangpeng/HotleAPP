@@ -3,7 +3,7 @@
 <mapper namespace="top.lspa.mapper.HotelMapper">
 	<insert id="insert" parameterType="Hotel">
 		insert into t_hotels(city,lat,lon,hotelName,address,description,isDeleted) 
-		values(#{city},#{lat},#{lon},#{hotelName},#{address},#{description},0);
+		values(#{city},#{lat},#{lon},#{hotelName},#{address},#{description},0)
 	</insert>
 	
 	<select id="select" parameterType="Hotel" resultType="Hotel">

@@ -3,7 +3,8 @@
 <%
 	String contxtPath = request.getContextPath();
 %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>  
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -33,16 +34,22 @@
    <div class="container">
     <ul class="giftlist unstyled">
       
-     <c:forEach items="${createDate }" var="date" varStatus="loop">
+     <c:forEach items="${orderList }" var="order">
 		  <li>
 		   <div class="imgbox">
-		   	<a href="Gift.aspx.html"><img src="http://www.gridinn.com/photos/gift/13.jpg"> </a> 
+		   	<a href="Gift.aspx.html"><img src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"> </a> 
 		   </div>
 		   <div class="desc">
-		     <a href="Gift.aspx@id=13">萨摩充电宝</a> <br/>
-		     <a href="Gift.aspx@id=13"><em>9600 积分 </em></a> 
-		     <a href="Gift.aspx@id=13"><em>创建时间:${date } </em></a> 
-		     <a href="Gift.aspx@id=13"><em>创建时间:${date } </em></a> 
+		     <a href="Gift.aspx@id=13">
+		     <c:if test="${order.payOrNot }">已付款</c:if>
+			 <c:if test="${not order.payOrNot}">未付款</c:if>
+		     </a> <br/>
+		     <a href="Gift.aspx@id=13"><em>入住时间：
+		     	<fmt:formatDate value="${order.checkInDate }" pattern="yyyy-MM-dd" />
+		     </em></a></br> 
+		     <a href="Gift.aspx@id=13"><em>离开时间：
+		     <fmt:formatDate value="${order.checkOutDate }" pattern="yyyy-MM-dd" />
+		     </em></a> 
 		  </div>
 		 </li>
      </c:forEach>
