@@ -25,9 +25,6 @@
     
     <!-- 开启spring aop 注解支持 -->
     <aop:aspectj-autoproxy/>
-    
-
-
 
 	<!-- 约定大于配置：约定视图页面的全路径 = prefix + viewName + suffix -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,13 +63,20 @@ public class RoomController {
 			jValue.append(formatter.format(new Date())).append("=").append(sb.toString()).append("=0");
 			String key = sb.toString().replaceAll("\\*", String.valueOf(user.getId()));
 			//1代表不存在，0代表存在，相当于锁的存在
+			
 			if (jedis.setnx(sb.toString(), "1")==1) {
-				JedisUtils.setex(key, 10*60, jValue.toString());
+				JedisUtils.setex(key, 60*10, jValue.toString());
 				//todo:十分钟后查询数据库是否付款，如果没有付款就打开锁
-				Boolean payOrNot = selectPayOrNot(user.getId(), checkInDate, checkOutDate);
-				if (!payOrNot) {
-					JedisUtils.del(sb.toString());
-				}
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						Boolean payOrNot = selectPayOrNot(user.getId(), checkInDate, checkOutDate);
+						if (!payOrNot) {
+							JedisUtils.del(sb.toString());
+						}
+					}
+				}, 1000*60*10);
 			}else {
 				resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
 			}
@@ -77,16 +86,20 @@ public class RoomController {
 		return modelAndView;
 	}
 	
-	private Boolean selectPayOrNot(Long userId,String checkInDate,String checkOutDate) throws ParseException {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Date in = format.parse(checkInDate);
-		Date out =  format.parse(checkOutDate);
-		
-		Order order = new Order();
-		order.setCheckInDate(in);
-		order.setCheckOutDate(out);
-		order.setUserId(userId);
-		
-		return orderService.selectPayOrNot(order);
+	private Boolean selectPayOrNot(Long userId,String checkInDate,String checkOutDate) {
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			Date in = format.parse(checkInDate);
+			Date out =  format.parse(checkOutDate);
+			
+			Order order = new Order();
+			order.setCheckInDate(in);
+			order.setCheckOutDate(out);
+			order.setUserId(userId);
+			
+			return orderService.selectPayOrNot(order);
+		} catch (Exception e) {
+			throw new RuntimeException("解析错误");
+		}
 	}
 }

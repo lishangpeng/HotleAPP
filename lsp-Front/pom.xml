@@ -141,6 +141,14 @@
 	   	 	<groupId>org.springframework.data</groupId>
 	   	 	<artifactId>spring-data-redis</artifactId>
 	    </dependency>
+   	    <dependency>
+		    <groupId>org.quartz-scheduler</groupId>
+		    <artifactId>quartz</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.quartz-scheduler</groupId>
+		    <artifactId>quartz-jobs</artifactId>    
+		</dependency>	    
 
 	</dependencies>
 </project>

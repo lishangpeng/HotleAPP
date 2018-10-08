@@ -11,7 +11,7 @@
 			<if test="payOrNot!=null">and payOrNot = #{payOrNot}</if>
 	</select>
 	
-	<select id="select" parameterType="Order" resultType="Order">
+	<select id="selectPayOrNot" parameterType="Order" resultType="Order">
 		select payOrNot from t_orders
 		where userId = #{userId} and checkInDate = #{checkInDate} and checkOutDate = #{checkOutDate}
 	</select>
