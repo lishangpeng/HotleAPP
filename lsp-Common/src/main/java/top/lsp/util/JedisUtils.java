@@ -130,7 +130,7 @@ public class JedisUtils {
         }
     }
     
-    public synchronized static void getLock() {
+/*    public synchronized static void getLock() {
     	getJedis().set("lock", "1");
-    }
+    }*/
 }

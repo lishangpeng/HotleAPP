@@ -239,15 +239,15 @@ public class UserController {
 		Set<String> values = jedis.keys(userId+"=*");
 		List<String> orderList = new ArrayList<>();
 		SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd ");
+		Date[] createDate = null;
+		String[] hotelId = null;
+		String[] roomId = null;
+		String[] checkInDate = null;
+		String[] checkOutDate = null;
 		if (values.size()>0) {
 			for(String str : values) {
 				orderList.add(str);
 			}
-			Date[] createDate = null;
-			String[] hotelId = null;
-			String[] roomId = null;
-			String[] checkInDate = null;
-			String[] checkOutDate = null;
 			for(int i=0;i<orderList.size();i++) {
 				String[] strs = orderList.get(i).split("=");
 				createDate[i] = formatter.parse(strs[0]);
@@ -256,7 +256,11 @@ public class UserController {
 				checkInDate[i] = strs[4];
 				checkOutDate[i] = strs[5];
 			}
+			
 		}
+		
+		modelAndView.addObject("createDate", createDate);
+		modelAndView.addObject("hotelId", hotelId);
 		return modelAndView;
 	}
 }

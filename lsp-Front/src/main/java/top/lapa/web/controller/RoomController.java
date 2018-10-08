@@ -1,6 +1,7 @@
 package top.lapa.web.controller;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
@@ -9,23 +10,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import redis.clients.jedis.Jedis;
 import top.lsp.util.JedisUtils;
+import top.lspa.pojo.Order;
 import top.lspa.pojo.User;
+import top.lspa.service.OrderService;
 
 @Controller
 @RequestMapping("/room")
 public class RoomController {
+	//表设计的问题 所以在创建order表的时候 需要在roomUser表中也插入数据
+	@Autowired
+	private OrderService orderService;
 	
 	@RequestMapping(value="/order")
-	@Transactional
-	public ModelAndView orderPage(String hotelId,String roomId,String checkInDate,String checkOutDate,HttpServletResponse resp,HttpServletRequest req) throws IOException {
+	public ModelAndView orderPage(String hotelId,String roomId,String checkInDate,String checkOutDate,HttpServletResponse resp,HttpServletRequest req) throws IOException, ParseException {
 		//创建订单实际是在redis中放上数据 在10分钟后在写入数据库
 		//0代表未付款，1代表已经付款
 		//创建的格式 userId=hotelId=roomId=checkInDate=checkOutDate:date=userId=hotelId=roomId=checkInDate=checkOutDate=0
@@ -57,9 +60,14 @@ public class RoomController {
 			SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd ");
 			jValue.append(formatter.format(new Date())).append("=").append(sb.toString()).append("=0");
 			String key = sb.toString().replaceAll("\\*", String.valueOf(user.getId()));
-			//1代表不存在，0代表存在
+			//1代表不存在，0代表存在，相当于锁的存在
 			if (jedis.setnx(sb.toString(), "1")==1) {
-				JedisUtils.setex(key, 60*10, jValue.toString());
+				JedisUtils.setex(key, 10*60, jValue.toString());
+				//todo:十分钟后查询数据库是否付款，如果没有付款就打开锁
+				Boolean payOrNot = selectPayOrNot(user.getId(), checkInDate, checkOutDate);
+				if (!payOrNot) {
+					JedisUtils.del(sb.toString());
+				}
 			}else {
 				resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
 			}
@@ -67,5 +75,18 @@ public class RoomController {
 		jedis.close();
 		ModelAndView modelAndView = new ModelAndView("room/order");
 		return modelAndView;
+	}
+	
+	private Boolean selectPayOrNot(Long userId,String checkInDate,String checkOutDate) throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Date in = format.parse(checkInDate);
+		Date out =  format.parse(checkOutDate);
+		
+		Order order = new Order();
+		order.setCheckInDate(in);
+		order.setCheckOutDate(out);
+		order.setUserId(userId);
+		
+		return orderService.selectPayOrNot(order);
 	}
 }

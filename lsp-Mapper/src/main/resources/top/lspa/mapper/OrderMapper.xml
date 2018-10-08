@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lspa.mapper.OrderMapper">
+	<select id="select" parameterType="Order" resultType="Order">
+		select * from t_orders 
+		where isDeleted = false
+			<if test="id!=null"> and id=#{id}</if>
+			<if test="userId!=null"> and userId = #{userId}</if>
+			<if test="checkInDate!=null">and checkInDate = #{checkInDate}</if>
+			<if test="checkOutDate!=null">and checkOutDate = #{checkOutDate}</if>
+			<if test="payOrNot!=null">and payOrNot = #{payOrNot}</if>
+	</select>
+	
+	<select id="select" parameterType="Order" resultType="Order">
+		select payOrNot from t_orders
+		where userId = #{userId} and checkInDate = #{checkInDate} and checkOutDate = #{checkOutDate}
+	</select>
+</mapper>
