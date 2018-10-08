@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -24,6 +25,9 @@
     
     <!-- 开启spring aop 注解支持 -->
     <aop:aspectj-autoproxy/>
+    
+
+
 
 	<!-- 约定大于配置：约定视图页面的全路径 = prefix + viewName + suffix -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -42,7 +46,6 @@
 		<property name="defaultEncoding" value="UTF-8" />
 		<property name="maxInMemorySize" value="40960" />
 	</bean>
-    
     
     <!-- 资源映射 -->
     <mvc:resources location="/Images/" mapping="/images/**" />
