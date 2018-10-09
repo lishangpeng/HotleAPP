@@ -253,7 +253,6 @@ public class UserController {
 		modelAndView.addObject("orderList", orderList);
 		
 		//todo:查出酒店和房间的名字
-		
 		return modelAndView;
 	}
 }

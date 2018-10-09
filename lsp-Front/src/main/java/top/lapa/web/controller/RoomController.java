@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,7 +29,7 @@ public class RoomController {
 	//表设计的问题 所以在创建order表的时候 需要在roomUser表中也插入数据
 	@Autowired
 	private OrderService orderService;
-	
+	private int count;
 	@RequestMapping(value="/order")
 	public ModelAndView orderPage(String hotelId,String roomId,String checkInDate,String checkOutDate,HttpServletResponse resp,HttpServletRequest req) throws IOException, ParseException {
 		//创建订单实际是在redis中放上数据 在10分钟后在写入数据库
@@ -39,7 +40,7 @@ public class RoomController {
 		resp.setContentType("text/html;charset=UTF-8");
 		User user = (User) req.getSession().getAttribute("user");
 		if (user==null) {
-			resp.getWriter().println("<script type='text/javascript'>alert('请先点击下方登录')</script>");
+			resp.getWriter().println("<script type='text/javascript'>alert('请先点击下方登录');history.go(-1);</script>");
 			return null;
 		}
 	    StringBuilder sb = new StringBuilder();
@@ -65,7 +66,7 @@ public class RoomController {
 			//1代表不存在，0代表存在，相当于锁的存在
 			//sb.toString 这个key相当于一个锁 如果完成了就会把这个时间段的房间锁住
 			if (jedis.setnx(sb.toString(), "1")==1) {
-				JedisUtils.setex(key, 60*10, jValue.toString());
+				JedisUtils.setex(key, 10*60, jValue.toString());
 				//创建订单成功，插入数据库中，方便用户查看，付款的订单需要往userroom插入一份
 				Order order = new Order();
 				order.setUserId(user.getId());
@@ -76,16 +77,21 @@ public class RoomController {
 				order.setPayOrNot(false);
 				orderService.insert(order);
 				//todo:十分钟后查询数据库是否付款，如果没有付款就打开锁
+				//有个Bug 没删除的时候关闭服务器 timer又会重新从0开始计时
 				Timer timer = new Timer();
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						Boolean payOrNot = selectPayOrNot(user.getId(), checkInDate, checkOutDate,Long.parseLong(hotelId),Long.parseLong(roomId));
-						if (!payOrNot) {
-							JedisUtils.del(sb.toString());
+						List<Boolean> payOrNots = selectPayOrNot(user.getId(), checkInDate, checkOutDate,Long.parseLong(hotelId),Long.parseLong(roomId));
+						for(Boolean payOrNot:payOrNots) {
+							if (payOrNot) {
+								this.cancel();
+								break;
+							}
 						}
+						JedisUtils.del(sb.toString());
 					}
-				}, 1000*60*10);
+				},1000*60*10);
 			}else {
 				resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
 			}
@@ -95,7 +101,7 @@ public class RoomController {
 		return modelAndView;
 	}
 	
-	private Boolean selectPayOrNot(Long userId,String checkInDate,String checkOutDate,Long hotelId,Long roomId) {
+	private List<Boolean> selectPayOrNot(Long userId,String checkInDate,String checkOutDate,Long hotelId,Long roomId) {
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			Date in = format.parse(checkInDate);
@@ -110,7 +116,7 @@ public class RoomController {
 			
 			return orderService.selectPayOrNot(order);
 		} catch (Exception e) {
-			throw new RuntimeException("解析错误");
+			throw new RuntimeException("解析错误",e);
 		}
 	}
 }

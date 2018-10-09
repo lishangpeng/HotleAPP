@@ -13,7 +13,7 @@
 			<if test="roomId!=null">and roomId = #{roomId}</if>
 	</select>
 	
-	<select id="selectPayOrNot" parameterType="Order" resultType="Order">
+	<select id="selectPayOrNot" parameterType="Order" resultType="boolean">
 		select payOrNot from t_orders
 		where userId = #{userId} and checkInDate = #{checkInDate} and checkOutDate = #{checkOutDate}
 			  and hotelId = #{hotelId} and roomId = #{roomId}

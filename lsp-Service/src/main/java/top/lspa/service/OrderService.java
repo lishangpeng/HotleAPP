@@ -1,5 +1,7 @@
 package top.lspa.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +13,13 @@ public class OrderService extends BaseService<Order>{
 	
 	@Autowired
 	private OrderMapper orderMapper;
-	public Boolean selectPayOrNot(Order order) {
-		Boolean bo =  orderMapper.selectPayOrNot(order);
-		if (bo == null) {
-			bo = false;
+	public List<Boolean> selectPayOrNot(Order order) {
+		List<Boolean> bos =  orderMapper.selectPayOrNot(order);
+		for(Boolean bo:bos) {
+			if (bo == null) {
+				bo = false;
+			}
 		}
-		return bo;
+		return bos;
 	}
 }
