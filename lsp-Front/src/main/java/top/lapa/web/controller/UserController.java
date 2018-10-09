@@ -30,7 +30,10 @@ import top.lsp.util.AjaxResult;
 import top.lsp.util.CommonUtils;
 import top.lsp.util.ImageCodeUtils;
 import top.lsp.util.JedisUtils;
+import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Order;
+import top.lspa.pojo.Room;
+import top.lspa.pojo.RoomUser;
 import top.lspa.pojo.User;
 import top.lspa.service.HotelService;
 import top.lspa.service.OrderService;
@@ -251,8 +254,18 @@ public class UserController {
 		order.setUserId(user.getId());
 		List<Order> orderList = orderService.selectList(order);
 		modelAndView.addObject("orderList", orderList);
-		
+		List<Room> roomList = new ArrayList<>();
+		List<Hotel> hotelList = new ArrayList<>();
 		//todo:查出酒店和房间的名字
+		for(Order ord:orderList) {
+			Room room = roomService.selectOne(ord.getRoomId());
+			roomList.add(room);
+			
+			Hotel hotel = hotelService.selectOne(ord.getHotelId());
+			hotelList.add(hotel);
+		}
+		modelAndView.addObject("roomList", roomList);
+		modelAndView.addObject("hotelList", hotelList);
 		return modelAndView;
 	}
 }

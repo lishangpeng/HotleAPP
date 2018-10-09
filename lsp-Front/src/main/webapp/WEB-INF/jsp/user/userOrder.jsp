@@ -40,6 +40,26 @@
 		   	<a href="Gift.aspx.html"><img src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"> </a> 
 		   </div>
 		   <div class="desc">
+			<c:set var="flag" value="true"/>
+			<c:forEach items="${hotelList }" var="hotel">
+				<c:if test="${hotel.id eq order.hotelId }">
+					<c:if test="${flag }">
+						<a href="Gift.aspx@id=13">${hotel.hotelName }</a>
+						<c:set var="flag" value="false"/>
+					</c:if>
+				</c:if>
+			</c:forEach>
+			
+			<c:set var="flag" value="true"/>
+			<c:forEach items="${roomList }" var="room">
+				<c:if test="${room.id eq order.roomId }">
+					<c:if test="${flag }">
+						<a href="Gift.aspx@id=13">${room.roomName }</a></br>
+						<c:set var="flag" value="false"/>
+					</c:if>
+				</c:if>
+			</c:forEach>
+			
 		     <a href="Gift.aspx@id=13">
 		     <c:if test="${order.payOrNot }">已付款</c:if>
 			 <c:if test="${not order.payOrNot}">未付款</c:if>
