@@ -197,4 +197,10 @@ public class HotelController {
 	public ModelAndView nearHotel() {
 		return new ModelAndView("map");
 	}
+	
+	//todo:简介
+	
+	//todo:地图导航
+	
+	//todo:评论
 }

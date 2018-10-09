@@ -10,14 +10,28 @@
 body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
 </style>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=CpXf96MGs8IlF4qbg0GSM0z3Frv0FlkW"></script>
-<title>附近城市</title>
+<title>附近酒店</title>
+<link href="<%=contxtPath %>/styles/NewGlobal.css" rel="stylesheet" />
+<style>
+    img {
+	   max-width: none;
+	}
+	
+</style>
 </head>
 <body>
+ <div class="header">
+ <a href="<%=contxtPath %>/" class="home">
+            <span class="header-icon header-icon-home"></span>
+            <span class="header-name">主页</span>
+</a>
+<div class="title" id="titleString">附近的酒店</div>
 <a href="javascript:history.go(-1);" class="back">
             <span class="header-icon header-icon-return"></span>
             <span class="header-name">返回</span>
-</a>
-<div id="allmap">
+        </a>
+ </div>
+<div id="allmap" id="map_canvas">
 	<iframe id="geoPage" width=0 height=0 frameborder=0  style="display:none;" scrolling="no"
 	    src="https://apis.map.qq.com/tools/geolocation?key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77&referer=myapp">
 	</iframe>
