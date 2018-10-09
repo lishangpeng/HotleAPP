@@ -199,8 +199,18 @@ public class HotelController {
 	}
 	
 	//todo:简介
+	@RequestMapping(value="/hotelInfo",method=RequestMethod.GET)
+	public ModelAndView hotelInfoPage(Long hotelId) {
+		ModelAndView modelAndView = new ModelAndView("hotel/hotelInfo");
+		return modelAndView;
+	}
 	
 	//todo:地图导航
 	
 	//todo:评论
+	@RequestMapping(value="/hotelComment",method=RequestMethod.GET)
+	public ModelAndView hotelCommentPage(Long hotelId) {
+		ModelAndView modelAndView = new ModelAndView("hotel/hotelComment");
+		return modelAndView;
+	}
 }

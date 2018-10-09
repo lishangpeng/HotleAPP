@@ -22,6 +22,7 @@
 
     <!-- 开启springMVC相关注解支持 -->
 	<mvc:annotation-driven />
+    <bean class="top.lapa.web.aop.LogAspect"></bean>
     
     <!-- 开启spring aop 注解支持 -->
     <aop:aspectj-autoproxy/>

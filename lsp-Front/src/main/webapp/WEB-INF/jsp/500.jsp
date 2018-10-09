@@ -7,9 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<%
-	int a = 1/0;
-%>
-	heheh
+<h1>我聪明绝顶的鹏哥也有出错的时候呀</h1>
 </body>
 </html>

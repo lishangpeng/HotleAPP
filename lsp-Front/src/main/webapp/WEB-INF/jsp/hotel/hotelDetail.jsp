@@ -117,9 +117,9 @@
 			<li class="first">
            <a href="#BookRoom"  class="active">房型</a>
 			</li>
-			<li><a href="HotelInfo.aspx.html">简介</a></li>
-			<li><a href="#">地图</a></li>
-			<li><a href="Hotelreview.aspx.html">评论</a></li>
+			<li><a href="<%=contxtPath %>/hotel/hotelInfo?hotelId=${hotel.id}&checkInDate=${checkInDate}$checkOutDate=${checkOutDate}">简介</a></li>
+			<li><a href="<%=contxtPath %>/hotel/hotelMap?hotelId=${hotel.id}&checkInDate=${checkInDate}$checkOutDate=${checkOutDate}">地图</a></li>
+			<li><a href="<%=contxtPath %>/hotel/hotelComment?hotelId=${hotel.id}&checkInDate=${checkInDate}$checkOutDate=${checkOutDate}">评论</a></li>
 </ul>
  <div id="BookRoom" class="tab-pane active fade in">   
 <div class="detail-address-bar">

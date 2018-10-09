@@ -1,3 +1,6 @@
+<%@page import="java.util.Calendar"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Date"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@include file="./header.jsp" %>
@@ -200,16 +203,27 @@
 				</li>
    
                 </ul>
-                 <input id="checkInDate" name="checkInDate" value="2018-04-11" type="hidden" />
-                 <input id="checkOutDate" name="checkOutDate" value="2018-04-12" type="hidden" />
+                <%
+                	Date now = new Date();
+                	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                	String formatDate = format.format(now);
+                	
+                	 Calendar c = Calendar.getInstance();
+                     c.setTime(now);
+                     c.add(Calendar.DAY_OF_MONTH, 1);
+                     Date tomorrow = c.getTime();
+                     String formatTomorrow =  format.format(tomorrow);
+                %>
+                 <input id="checkInDate" name="checkInDate" value="<%=formatDate %>" type="hidden" />
+                 <input id="checkOutDate" name="checkOutDate" value="<%=formatTomorrow %>" type="hidden" />
                  <input id="cityArea" name="cityArea" value="全部" type="hidden" />
                  <input id="city" name="city" value="${sessionScope.user.city}" type="hidden"/>
 <script type="text/javascript">
     (function ($, undefined) {
         $(function () {//dom ready
             var open = null, today = new Date();
-            var beginday = '2018-04-11';
-            var endday = '2018-04-12';
+            var beginday = '<%=formatDate%>';
+            var endday = '<%=formatTomorrow%>';
             //设置开始时间为今天
             $('#datestart').html(beginday + '<span class="ui-icon-down"></span>');
             //设置结束事件

@@ -7,9 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<%
-	int a = 1/0;
-%>
-	heheh
+<h1>找不到找不到啦</h1>
 </body>
 </html>
