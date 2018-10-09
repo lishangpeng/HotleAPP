@@ -264,6 +264,12 @@ public class UserController {
 			Hotel hotel = hotelService.selectOne(ord.getHotelId());
 			hotelList.add(hotel);
 		}
+		
+		//调用redis 查询订单目前的状态，查询数据库查看是否付款
+		List<String> orderType = new ArrayList<>();
+		
+		
+		
 		modelAndView.addObject("roomList", roomList);
 		modelAndView.addObject("hotelList", hotelList);
 		return modelAndView;

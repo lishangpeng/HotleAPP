@@ -15,13 +15,25 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeWapPayModel;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
+
 import redis.clients.jedis.Jedis;
+import top.lapa.web.pay.AlipayConfig;
 import top.lsp.util.JedisUtils;
+import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Order;
+import top.lspa.pojo.Room;
 import top.lspa.pojo.User;
+import top.lspa.service.HotelService;
 import top.lspa.service.OrderService;
+import top.lspa.service.RoomService;
 
 @Controller
 @RequestMapping("/room")
@@ -29,8 +41,14 @@ public class RoomController {
 	//表设计的问题 所以在创建order表的时候 需要在roomUser表中也插入数据
 	@Autowired
 	private OrderService orderService;
-	private int count;
-	@RequestMapping(value="/order")
+	
+	@Autowired
+	private RoomService roomService;
+	
+	@Autowired
+	private HotelService hotelService;
+	
+	@RequestMapping(value="/order",method=RequestMethod.GET)
 	public ModelAndView orderPage(String hotelId,String roomId,String checkInDate,String checkOutDate,HttpServletResponse resp,HttpServletRequest req) throws IOException, ParseException {
 		//创建订单实际是在redis中放上数据 在10分钟后在写入数据库
 		//0代表未付款，1代表已经付款
@@ -94,13 +112,30 @@ public class RoomController {
 				},1000*60*10);
 			}else {
 				resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
+				jedis.close();
+				return null;
 			}
 		}
 		jedis.close();
-		ModelAndView modelAndView = new ModelAndView("room/order");
+		//todo  将订单的信息查询出来给pay页面
+		Room room = roomService.selectOne(Long.valueOf(roomId));
+		Hotel hotel = hotelService.selectOne(Long.valueOf(hotelId));
+		ModelAndView modelAndView = new ModelAndView("room/pay");
+		modelAndView.addObject("roomName", room.getRoomName());
+		modelAndView.addObject("price", room.getPrice());
+		modelAndView.addObject("hotelName", hotel.getHotelName());
 		return modelAndView;
 	}
 	
+	/**
+	 * 阿里云demo拔下来的代码 没改过 看不懂去找api看
+	 * @param userId
+	 * @param checkInDate
+	 * @param checkOutDate
+	 * @param hotelId
+	 * @param roomId
+	 * @return
+	 */
 	private List<Boolean> selectPayOrNot(Long userId,String checkInDate,String checkOutDate,Long hotelId,Long roomId) {
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -117,6 +152,58 @@ public class RoomController {
 			return orderService.selectPayOrNot(order);
 		} catch (Exception e) {
 			throw new RuntimeException("解析错误",e);
+		}
+	}
+	
+	@RequestMapping(value="/order",method=RequestMethod.POST)
+	public void orderSubmit(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		if(request.getParameter("WIDout_trade_no")!=null){
+			// 商户订单号，商户网站订单系统中唯一订单号，必填
+		    String out_trade_no = new String(request.getParameter("WIDout_trade_no").getBytes("ISO-8859-1"),"UTF-8");
+			// 订单名称，必填
+		    String subject = new String(request.getParameter("WIDsubject").getBytes("ISO-8859-1"),"UTF-8");
+			System.out.println(subject);
+		    // 付款金额，必填
+		    String total_amount=new String(request.getParameter("WIDtotal_amount").getBytes("ISO-8859-1"),"UTF-8");
+		    // 商品描述，可空
+		    String body = new String(request.getParameter("WIDbody").getBytes("ISO-8859-1"),"UTF-8");
+		    // 超时时间 可空
+		   String timeout_express="2m";
+		    // 销售产品码 必填
+		    String product_code="QUICK_WAP_WAY";
+		    /**********************/
+		    // SDK 公共请求类，包含公共请求参数，以及封装了签名与验签，开发者无需关注签名与验签     
+		    //调用RSA签名方式
+		    AlipayClient client = new DefaultAlipayClient(AlipayConfig.URL, AlipayConfig.APPID, AlipayConfig.RSA_PRIVATE_KEY, AlipayConfig.FORMAT, AlipayConfig.CHARSET, AlipayConfig.ALIPAY_PUBLIC_KEY,AlipayConfig.SIGNTYPE);
+		    AlipayTradeWapPayRequest alipay_request=new AlipayTradeWapPayRequest();
+		    
+		    // 封装请求支付信息
+		    AlipayTradeWapPayModel model=new AlipayTradeWapPayModel();
+		    model.setOutTradeNo(out_trade_no);
+		    model.setSubject(subject);
+		    model.setTotalAmount(total_amount);
+		    model.setBody(body);
+		    model.setTimeoutExpress(timeout_express);
+		    model.setProductCode(product_code);
+		    alipay_request.setBizModel(model);
+		    // 设置异步通知地址
+		    alipay_request.setNotifyUrl(AlipayConfig.notify_url);
+		    // 设置同步地址
+		    alipay_request.setReturnUrl(AlipayConfig.return_url);   
+		    
+		    // form表单生产
+		    String form = "";
+			try {
+				// 调用SDK生成表单
+				form = client.pageExecute(alipay_request).getBody();
+				response.setContentType("text/html;charset=" + AlipayConfig.CHARSET); 
+			    response.getWriter().write(form);//直接将完整的表单html输出到页面 
+			    response.getWriter().flush(); 
+			    response.getWriter().close();
+			} catch (AlipayApiException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 		}
 	}
 }

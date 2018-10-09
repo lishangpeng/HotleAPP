@@ -148,7 +148,10 @@
 		<dependency>
 		    <groupId>org.quartz-scheduler</groupId>
 		    <artifactId>quartz-jobs</artifactId>    
-		</dependency>	    
-
+		</dependency>
+		<dependency>
+		    <groupId>com.alipay.sdk</groupId>
+		    <artifactId>alipay-sdk-java</artifactId>	    
+		</dependency>
 	</dependencies>
 </project>
