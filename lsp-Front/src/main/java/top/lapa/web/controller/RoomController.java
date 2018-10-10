@@ -50,7 +50,6 @@ public class RoomController {
 	
 	@RequestMapping(value="/order",method=RequestMethod.GET)
 	public ModelAndView orderPage(String hotelId,String roomId,String checkInDate,String checkOutDate,HttpServletResponse resp,HttpServletRequest req) throws IOException, ParseException {
-		//创建订单实际是在redis中放上数据 在10分钟后在写入数据库
 		//0代表未付款，1代表已经付款
 		//创建的格式 userId=hotelId=roomId=checkInDate=checkOutDate:date=userId=hotelId=roomId=checkInDate=checkOutDate=0
 		//如果使用下划线不好分割

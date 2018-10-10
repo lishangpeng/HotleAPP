@@ -207,8 +207,13 @@ public class HotelController {
 	
 	//todo:简介
 	@RequestMapping(value="/hotelInfo",method=RequestMethod.GET)
-	public ModelAndView hotelInfoPage(Long hotelId) {
+	public ModelAndView hotelInfoPage(Long hotelId,String checkInDate,String checkOutDate) {
 		ModelAndView modelAndView = new ModelAndView("hotel/hotelInfo");
+
+		Hotel hotel = hotelService.selectOne(hotelId);
+		modelAndView.addObject("hotel",hotel);
+		modelAndView.addObject("checkInDate", checkInDate);
+		modelAndView.addObject("checkOutDate", checkOutDate);
 		return modelAndView;
 	}
 	
@@ -216,7 +221,7 @@ public class HotelController {
 	
 	//todo:评论
 	@RequestMapping(value="/hotelComment")
-	public ModelAndView hotelCommentPage(Long hotelId,Integer curr) {
+	public ModelAndView hotelCommentPage(Long hotelId,Integer curr,String checkInDate,String checkOutDate) {
 		if (curr==null) {
 			curr = 1;
 		}
@@ -225,8 +230,17 @@ public class HotelController {
 		}
 		ModelAndView modelAndView = new ModelAndView("hotel/hotelComment");
 		PageInfo<Comment> commentList = commontService.page(curr, 3, hotelId);
+		for(Comment comment : commentList.getList()) {
+			String phoneNum = comment.getPhoneNum();
+			StringBuilder sb = new StringBuilder();
+//			1566 9508 998
+			sb.append(phoneNum.substring(0, 4)).append("****").append(phoneNum.substring(8));
+			comment.setPhoneNum(sb.toString());
+		}
 		modelAndView.addObject("pageInfo",commentList);
 		modelAndView.addObject("hotelId", hotelId);
+		modelAndView.addObject("checkInDate", checkInDate);
+		modelAndView.addObject("checkOutDate", checkOutDate);
 		return modelAndView;
 	}
 }

@@ -9,16 +9,23 @@ public class Comment implements Serializable{
 	private Long hotelId;
 	private Long userId;
 	private Date createTime;
+	private String comment;
+	private Long id;
+	private Long roomId;
+	private String roomName;
+	private String phoneNum;
+	public String getPhoneNum() {
+		return phoneNum;
+	}
+	public void setPhoneNum(String phoneNum) {
+		this.phoneNum = phoneNum;
+	}
 	public String getComment() {
 		return comment;
 	}
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	private String comment;
-	private Long id;
-	private Long roomId;
-	private String roomName;
 	public String getRoomName() {
 		return roomName;
 	}
