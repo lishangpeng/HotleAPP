@@ -3,14 +3,34 @@ package top.lspa.pojo;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Commont implements Serializable{
+public class Comment implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private Long hotelId;
 	private Long userId;
 	private Date createTime;
-	private String commont;
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	private String comment;
 	private Long id;
+	private Long roomId;
+	private String roomName;
+	public String getRoomName() {
+		return roomName;
+	}
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
+	}
+	public Long getRoomId() {
+		return roomId;
+	}
+	public void setRoomId(Long roomId) {
+		this.roomId = roomId;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -35,12 +55,6 @@ public class Commont implements Serializable{
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
-	public String getCommont() {
-		return commont;
-	}
-	public void setCommont(String commont) {
-		this.commont = commont;
-	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -56,7 +70,7 @@ public class Commont implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Commont other = (Commont) obj;
+		Comment other = (Comment) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

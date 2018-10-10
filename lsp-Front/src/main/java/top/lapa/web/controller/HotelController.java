@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.github.pagehelper.PageInfo;
+
+import top.lspa.pojo.Comment;
 import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Room;
 import top.lspa.pojo.RoomResult;
 import top.lspa.pojo.RoomUser;
 import top.lspa.pojo.User;
+import top.lspa.service.CommentService;
 import top.lspa.service.HotelService;
 import top.lspa.service.RoomService;
 import top.lspa.service.RoomUserService;
@@ -37,6 +41,9 @@ public class HotelController {
 	
 	@Autowired
 	private RoomUserService roomUserService;
+	
+	@Autowired
+	private CommentService commontService;
 	
 	@RequestMapping(value="/list.do",method=RequestMethod.GET)
 	public ModelAndView hotelPage() {
@@ -208,9 +215,18 @@ public class HotelController {
 	//todo:地图导航
 	
 	//todo:评论
-	@RequestMapping(value="/hotelComment",method=RequestMethod.GET)
-	public ModelAndView hotelCommentPage(Long hotelId) {
+	@RequestMapping(value="/hotelComment")
+	public ModelAndView hotelCommentPage(Long hotelId,Integer curr) {
+		if (curr==null) {
+			curr = 1;
+		}
+		if (hotelId == null) {
+			return null;
+		}
 		ModelAndView modelAndView = new ModelAndView("hotel/hotelComment");
+		PageInfo<Comment> commentList = commontService.page(curr, 3, hotelId);
+		modelAndView.addObject("pageInfo",commentList);
+		modelAndView.addObject("hotelId", hotelId);
 		return modelAndView;
 	}
 }

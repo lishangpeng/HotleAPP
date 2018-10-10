@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lspa.mapper.CommentMapper">
+	<select id="select" parameterType="Comment" resultType="Comment">
+		select * from t_comments
+		where isDeleted = false
+			<if test="hotelId!=null">and hotelId=#{hotelId}</if>
+			<if test="userId!=null">and userId=#{userId}</if>
+			<if test="createTime!=null">and createTime=#{createTime}</if>
+			<if test="comment!=null">and comment like #{comment}</if>
+			<if test="roomId!=null">and roomId=#{roomId}</if>
+			<if test="roomName!=null">and roomName like #{roomName}</if>
+	</select>
+</mapper>

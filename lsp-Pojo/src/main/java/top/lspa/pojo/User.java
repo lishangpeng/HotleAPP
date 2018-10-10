@@ -15,7 +15,15 @@ public class User implements Serializable{
 	private String password;
 	private String passwordSalt;
 	private String city;
+	private String img;
 	
+	
+	public String getImg() {
+		return img;
+	}
+	public void setImg(String img) {
+		this.img = img;
+	}
 	public String getCity() {
 		return city;
 	}
