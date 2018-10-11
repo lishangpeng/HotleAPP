@@ -83,7 +83,7 @@ public class RoomController {
 			//1代表不存在，0代表存在，相当于锁的存在
 			//sb.toString 这个key相当于一个锁 如果完成了就会把这个时间段的房间锁住
 			if (jedis.setnx(sb.toString(), "1")==1) {
-				JedisUtils.setex(key, 10*60, jValue.toString());
+				JedisUtils.setex(key, 5*60, jValue.toString());
 				//创建订单成功，插入数据库中，方便用户查看，付款的订单需要往userroom插入一份
 				Order order = new Order();
 				order.setUserId(user.getId());
@@ -108,7 +108,7 @@ public class RoomController {
 						}
 						JedisUtils.del(sb.toString());
 					}
-				},1000*60*10);
+				},1000*60*5);
 			}else {
 				resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
 				jedis.close();
@@ -126,15 +126,6 @@ public class RoomController {
 		return modelAndView;
 	}
 	
-	/**
-	 * 阿里云demo拔下来的代码 没改过 看不懂去找api看
-	 * @param userId
-	 * @param checkInDate
-	 * @param checkOutDate
-	 * @param hotelId
-	 * @param roomId
-	 * @return
-	 */
 	private List<Boolean> selectPayOrNot(Long userId,String checkInDate,String checkOutDate,Long hotelId,Long roomId) {
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -154,6 +145,15 @@ public class RoomController {
 		}
 	}
 	
+	/**
+	 * 阿里云demo拔下来的代码 没改过 看不懂去找api看
+	 * @param userId
+	 * @param checkInDate
+	 * @param checkOutDate
+	 * @param hotelId
+	 * @param roomId
+	 * @return
+	 */
 	@RequestMapping(value="/order",method=RequestMethod.POST)
 	public void orderSubmit(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		if(request.getParameter("WIDout_trade_no")!=null){

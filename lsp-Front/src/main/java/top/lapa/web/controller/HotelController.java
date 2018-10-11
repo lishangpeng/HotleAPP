@@ -218,7 +218,16 @@ public class HotelController {
 	}
 	
 	//todo:地图导航
-	
+	@RequestMapping(value="/hotelMap")
+	public ModelAndView hotelMap(Long hotelId,String checkInDate,String checkOutDate) {
+		ModelAndView modelAndView = new ModelAndView();
+		Hotel hotel = hotelService.selectOne(hotelId);
+		modelAndView.addObject("hotel", hotel);
+		modelAndView.addObject("hotelId",hotelId);
+		modelAndView.addObject("checkInDate", checkInDate);
+		modelAndView.addObject("checkOutDate", checkOutDate);
+		return modelAndView;
+	}
 	//todo:评论
 	@RequestMapping(value="/hotelComment")
 	public ModelAndView hotelCommentPage(Long hotelId,Integer curr,String checkInDate,String checkOutDate) {

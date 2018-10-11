@@ -30,9 +30,9 @@
               <div class="clear"></div>  
                </a> 
                <ul class="unstyled">
-                   <li><a href="Hotel.aspx@id=5" class="order">预订</a></li>
-                   <li><a href="Hotelmap.aspx@id=5" class="gps">导航</a></li>
-                   <li><a href="Hotelinfo.aspx@id=5" class="reality">实景</a></li>
+                   <li><a href="<%=contxtPath %>/hotel/detail?hotelId=${hotel.id}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}" class="order">预订</a></li>
+                   <li><a href="<%=contxtPath %>/hotel/hotelMap?hotelId=${hotel.id}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}" class="gps">导航</a></li>
+                   <li><a href="<%=contxtPath %>/hotel/hotelInfo?hotelId=${hotel.id}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}" class="reality">实景</a></li>
                </ul>
              </li>
        		</c:forEach>

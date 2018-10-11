@@ -1,10 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%
+	String ctxPath = request.getContextPath();
+%>   
   <div class="footer">
   <div class="gezifooter">
       
-      <a href="login.aspx" class="ui-link">立即登陆</a> <font color="#878787">|</font> 
-       <a href="reg.aspx" class="ui-link">免费注册</a> <font color="#878787">|</font>                 
+      <a href="<%=ctxPath%>/user/login" class="ui-link">立即登陆</a> <font color="#878787">|</font> 
+       <a href="<%=ctxPath%>/user/register" class="ui-link">免费注册</a> <font color="#878787">|</font>                 
                   
 
        <a href="../www.gridinn.com/@display=pc" class="ui-link">电脑版</a>
