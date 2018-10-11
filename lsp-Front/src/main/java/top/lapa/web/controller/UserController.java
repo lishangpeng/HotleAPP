@@ -267,8 +267,23 @@ public class UserController {
 		
 		//调用redis 查询订单目前的状态，查询数据库查看是否付款
 		List<String> orderType = new ArrayList<>();
-		
-		
+		for(Order o:orderList) {
+			if (o.getPayOrNot() == true) {
+				orderType.add("已经付款");
+			}
+			StringBuilder key = new StringBuilder();
+			key.append(o.getUserId()).append("=").append(o.getHotelId()).append("=")
+			.append(o.getRoomId()).append("=").append(o.getCheckInDate()).append("=")
+			.append(o.getCheckOutDate());
+			
+			String value = JedisUtils.get(key.toString());
+			if (value == null) {
+				orderType.add("已失效");
+			}else {
+				orderType.add("未付款");
+			}
+			
+		}
 		
 		modelAndView.addObject("roomList", roomList);
 		modelAndView.addObject("hotelList", hotelList);
