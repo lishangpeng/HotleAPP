@@ -93,7 +93,7 @@ public class RoomController {
 				order.setRoomId(Long.parseLong(roomId));
 				order.setPayOrNot(false);
 				orderService.insert(order);
-				//todo:十分钟后查询数据库是否付款，如果没有付款就打开锁
+				//todo:五分钟后查询数据库是否付款，如果没有付款就打开锁
 				//有个Bug 没删除的时候关闭服务器 timer又会重新从0开始计时
 				//todo:优化  后续用quatz实现第二重保障
 				Timer timer = new Timer();
@@ -109,7 +109,7 @@ public class RoomController {
 						}
 						jedis.del(sb.toString());
 					}
-				},1000*5);
+				},1000*5*60);
 			}else {
 				resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
 				jedis.close();

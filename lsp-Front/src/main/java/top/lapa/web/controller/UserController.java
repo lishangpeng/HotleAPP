@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import redis.clients.jedis.Jedis;
 import top.lsp.util.AjaxResult;
 import top.lsp.util.CommonUtils;
 import top.lsp.util.ImageCodeUtils;
@@ -33,7 +35,6 @@ import top.lsp.util.JedisUtils;
 import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Order;
 import top.lspa.pojo.Room;
-import top.lspa.pojo.RoomUser;
 import top.lspa.pojo.User;
 import top.lspa.service.HotelService;
 import top.lspa.service.OrderService;
@@ -266,25 +267,32 @@ public class UserController {
 		}
 		
 		//调用redis 查询订单目前的状态，查询数据库查看是否付款
-		List<String> orderType = new ArrayList<>();
+		//key相等就是一种状态 而且order中的信息也相等
+		Map<String,String> orderType = new HashMap<>();
+		Map<String, Order> filterOrder = new HashMap<>(); //过滤order 把key相同的放在一起
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		for(Order o:orderList) {
-			if (o.getPayOrNot() == true) {
-				orderType.add("已经付款");
-			}
 			StringBuilder key = new StringBuilder();
 			key.append(o.getUserId()).append("=").append(o.getHotelId()).append("=")
-			.append(o.getRoomId()).append("=").append(o.getCheckInDate()).append("=")
-			.append(o.getCheckOutDate());
+			.append(o.getRoomId()).append("=").append(format.format(o.getCheckInDate())).append("=")
+			.append(format.format(o.getCheckOutDate()));
 			
-			String value = JedisUtils.get(key.toString());
-			if (value == null) {
-				orderType.add("已失效");
-			}else {
-				orderType.add("未付款");
+			if (o.getPayOrNot() == true) {
+				orderType.put(key.toString(),"已付款");
 			}
 			
+			filterOrder.put(key.toString(), o);
+			String value = JedisUtils.get(key.toString());
+			if (value == null) {
+				orderType.put(key.toString(),"已失效");
+			}else {
+				orderType.put(key.toString(),"未付款");
+			}
 		}
 		
+		
+		modelAndView.addObject("filterOrder", filterOrder);
+		modelAndView.addObject("orderType", orderType);
 		modelAndView.addObject("roomList", roomList);
 		modelAndView.addObject("hotelList", hotelList);
 		return modelAndView;

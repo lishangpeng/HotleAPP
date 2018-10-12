@@ -9,6 +9,9 @@ public class Order implements Serializable{
 	private Long userId;
 	private Long hotelId;
 	private Long roomId;
+	private Date checkInDate;
+	private Date checkOutDate;
+	private Boolean payOrNot;
 	public Long getHotelId() {
 		return hotelId;
 	}
@@ -21,9 +24,6 @@ public class Order implements Serializable{
 	public void setRoomId(Long roomId) {
 		this.roomId = roomId;
 	}
-	private Date checkInDate;
-	private Date checkOutDate;
-	private Boolean payOrNot;
 	public Long getId() {
 		return id;
 	}

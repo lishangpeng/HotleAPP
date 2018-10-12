@@ -3,6 +3,7 @@
 <%
 	String contxtPath = request.getContextPath();
 %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -18,12 +19,12 @@
 
 </head>
 <body>
- <div class="header">
- <a href="index.html" class="home">
+<div class="header">
+ <a href="<%=contxtPath %>/" class="home">
             <span class="header-icon header-icon-home"></span>
             <span class="header-name">主页</span>
 </a>
-<div class="title" id="titleString">我的订单</div>
+<div class="title" id="titleString"></div>
 <a href="javascript:history.go(-1);" class="back">
             <span class="header-icon header-icon-return"></span>
             <span class="header-name">返回</span>
@@ -34,17 +35,19 @@
    <div class="container">
     <ul class="giftlist unstyled">
       
-     <c:forEach items="${orderList }" var="order">
+     <c:forEach items="${filterOrder }" var="mapEntry">
+		<fmt:formatDate value="${mapEntry.value.checkInDate }" var="inDate"  pattern="yyyy-MM-dd"/>
+		<fmt:formatDate value="${mapEntry.value.checkOutDate }" var="outDate"  pattern="yyyy-MM-dd"/>
 		  <li>
 		   <div class="imgbox">
-		   	<a href="Gift.aspx.html"><img src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"> </a> 
+		   	<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><img src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"> </a> 
 		   </div>
 		   <div class="desc">
 			<c:set var="flag" value="true"/>
 			<c:forEach items="${hotelList }" var="hotel">
-				<c:if test="${hotel.id eq order.hotelId }">
+				<c:if test="${hotel.id eq mapEntry.value.hotelId }">
 					<c:if test="${flag }">
-						<a href="Gift.aspx@id=13">${hotel.hotelName }</a>
+						<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}">${hotel.hotelName }</a>
 						<c:set var="flag" value="false"/>
 					</c:if>
 				</c:if>
@@ -52,23 +55,38 @@
 			
 			<c:set var="flag" value="true"/>
 			<c:forEach items="${roomList }" var="room">
-				<c:if test="${room.id eq order.roomId }">
+				<c:if test="${room.id eq mapEntry.value.roomId }">
 					<c:if test="${flag }">
-						<a href="Gift.aspx@id=13">${room.roomName }</a></br>
+						<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}">${room.roomName }</a></br>
 						<c:set var="flag" value="false"/>
 					</c:if>
 				</c:if>
 			</c:forEach>
 			
-		     <a href="Gift.aspx@id=13">
-		     <c:if test="${order.payOrNot }">已付款</c:if>
-			 <c:if test="${not order.payOrNot}">未付款</c:if>
-		     </a> <br/>
-		     <a href="Gift.aspx@id=13"><em>入住时间：
-		     	<fmt:formatDate value="${order.checkInDate }" pattern="yyyy-MM-dd" />
+		     <c:forEach items="${orderType }" var="type">
+		     	<c:if test="${type.key eq mapEntry.key }">
+					<c:if test="${type.value eq '未付款' }">
+						<a href="#">
+							去付款
+						</a><br/>
+					</c:if>
+					<c:if test="${type.value eq '已付款' }">
+			     		<a href="javascript:void(0)">
+							<c:out value="${type.value }"></c:out>
+			    		</a> <br/>
+					</c:if>
+					<c:if test="${type.value eq '已失效' }">
+			     		<a href="javascript:void(0)">
+							<c:out value="${type.value }"></c:out>
+			    		</a> <br/>
+					</c:if>
+			    </c:if>
+		     </c:forEach>
+		     <a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><em>入住时间：
+		     	<fmt:formatDate value="${mapEntry.value.checkInDate }" pattern="yyyy-MM-dd" />
 		     </em></a></br> 
-		     <a href="Gift.aspx@id=13"><em>离开时间：
-		     <fmt:formatDate value="${order.checkOutDate }" pattern="yyyy-MM-dd" />
+		     <a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><em>离开时间：
+		     <fmt:formatDate value="${mapEntry.value.checkOutDate }" pattern="yyyy-MM-dd" />
 		     </em></a> 
 		  </div>
 		 </li>
