@@ -70,17 +70,21 @@
 				<c:if test="${order.orderType eq '未付款' }">
 					<a href="<%=contxtPath %>/room/order?hotelId=${order.hotelId }&roomId=${order.roomId }&checkInDate=${inDate }&checkOutDate=${outDate}">
 						去付款
-					</a><br/>
+					</a>
+					<br/>
 				</c:if>
 				<c:if test="${order.orderType eq '已付款' }">
 		     		<a href="javascript:void(0)">
 						<c:out value="${order.orderType }"></c:out>
-		    		</a> <br/>
+		    		</a> 
+		    		 <a href="#">评论</a>
+		    		<br/>
 				</c:if>
 				<c:if test="${order.orderType eq '已失效' }">
 		     		<a href="javascript:void(0)">
 						<c:out value="${order.orderType }"></c:out>
-		    		</a> <br/>
+		    		</a>
+		    		 <br/>
 				</c:if>
 				
 				<fmt:formatDate value="${order.createDate }" var="createDate" pattern="yyy-MM-dd hh:mm:ss"/>

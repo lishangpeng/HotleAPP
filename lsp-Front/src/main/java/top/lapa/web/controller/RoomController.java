@@ -54,97 +54,99 @@ public class RoomController {
 		//0代表未付款，1代表已经付款
 		//创建的格式 userId=hotelId=roomId=checkInDate=checkOutDate=createDate:date=userId=hotelId=roomId=checkInDate=checkOutDate
 		//如果使用下划线不好分割
-		resp.setCharacterEncoding("UTF-8");
-		resp.setContentType("text/html;charset=UTF-8");
-		User user = (User) req.getSession().getAttribute("user");
-		if (user==null) {
-			resp.getWriter().println("<script type='text/javascript'>alert('请先点击下方登录');history.go(-1);</script>");
-			return null;
-		}
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("*=");
-	    sb.append(hotelId).append("=").append(roomId).append("=").append(checkInDate).append("=").append(checkOutDate);
-	    Jedis jedis = JedisUtils.getJedis();
-	    Set<String> set = jedis.keys(sb.toString()); 
-	    String[] values = null;
-	    if (set.size()>0) {
-	    	values = set.toArray(new String[set.size()]);
-	    }
-	    //如果是自己则可以进入
-		if (values!=null) {
-			for(int i=0;i<values.length;i++) {
-				//房间是自己预定的就可以进入
-				if ((values[i].charAt(0)-'0') == user.getId()) {
-					Room room = roomService.selectOne(Long.valueOf(roomId));
-					Hotel hotel = hotelService.selectOne(Long.valueOf(hotelId));
-					ModelAndView modelAndView = new ModelAndView("room/pay");
-					modelAndView.addObject("roomName", room.getRoomName());
-					modelAndView.addObject("price", room.getPrice());
-					modelAndView.addObject("hotelName", hotel.getHotelName());
-					return modelAndView;
-				}
-			}
-			//这个房间不是自己预定的
-			resp.getWriter().println("<script type='text/javascript'>alert('手速慢了，刚被预定了');history.go(-1);</script>");
-			jedis.close();
-			return null;
-		}else {
-			StringBuilder jValue = new StringBuilder();
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			jValue.append(formatter.format(new Date())).append("=").append(sb.toString()).append("=0");
-			//1代表不存在，0代表存在，相当于锁的存在
-			//sb.toString 这个key相当于一个锁 如果完成了就会把这个时间段的房间锁住
-			if (jedis.setnx(sb.toString(), "1")==1) {
-				String key = sb.toString().replaceAll("\\*", String.valueOf(user.getId()));
-				JedisUtils.setex(key, 5*60, jValue.toString());
-				//创建订单成功，插入数据库中，方便用户查看，付款的订单需要往userroom插入一份
-				Order order = new Order();
-				order.setUserId(user.getId());
-				order.setCheckInDate(formatter.parse(checkInDate));
-				order.setCheckOutDate(formatter.parse(checkOutDate));
-				order.setHotelId(Long.parseLong(hotelId));
-				order.setRoomId(Long.parseLong(roomId));
-				order.setPayOrNot(false);
-				order.setCreateDate(new Date());
-				//优化增加了一个createDate字段
-				orderService.insert(order);
-				
-				//todo:五分钟后查询数据库是否付款，如果没有付款就打开锁
-				//有个Bug 没删除的时候关闭服务器 timer又会重新从0开始计时
-				//todo:优化  后续用quatz实现第二重保障
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
-					@Override
-					public void run() {
-						List<Boolean> payOrNots = selectPayOrNot(user.getId(), checkInDate, checkOutDate,Long.parseLong(hotelId),Long.parseLong(roomId));
-						for(Boolean payOrNot:payOrNots) {
-							if (payOrNot) {
-								this.cancel();
-								return;
-							}
-						}
-						jedis.del(sb.toString());
-						//增加一个订单状态orderType设置为失效
-						Order orderSetType = orderService.selectOne(order);
-						orderSetType.setOrderType("已失效");
-						orderService.updateOrderType(orderSetType);
-					}
-				},1000*5*60);
-			}else {
-				resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
-				jedis.close();
+		Jedis jedis = JedisUtils.getJedis();
+		try {
+			
+			resp.setCharacterEncoding("UTF-8");
+			resp.setContentType("text/html;charset=UTF-8");
+			User user = (User) req.getSession().getAttribute("user");
+			if (user==null) {
+				resp.getWriter().println("<script type='text/javascript'>alert('请先点击下方登录');history.go(-1);</script>");
 				return null;
 			}
+			StringBuilder sb = new StringBuilder();
+			sb.append("*=");
+			sb.append(hotelId).append("=").append(roomId).append("=").append(checkInDate).append("=").append(checkOutDate);
+			Set<String> set = jedis.keys(sb.toString()); 
+			String[] values = null;
+			if (set.size()>0) {
+				values = set.toArray(new String[set.size()]);
+			}
+			//如果是自己则可以进入
+			if (values!=null) {
+				for(int i=0;i<values.length;i++) {
+					//房间是自己预定的就可以进入
+					if ((values[i].charAt(0)-'0') == user.getId()) {
+						Room room = roomService.selectOne(Long.valueOf(roomId));
+						Hotel hotel = hotelService.selectOne(Long.valueOf(hotelId));
+						ModelAndView modelAndView = new ModelAndView("room/pay");
+						modelAndView.addObject("roomName", room.getRoomName());
+						modelAndView.addObject("price", room.getPrice());
+						modelAndView.addObject("hotelName", hotel.getHotelName());
+						return modelAndView;
+					}
+				}
+				//这个房间不是自己预定的
+				resp.getWriter().println("<script type='text/javascript'>alert('手速慢了，刚被预定了');history.go(-1);</script>");
+				return null;
+			}else {
+				StringBuilder jValue = new StringBuilder();
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+				jValue.append(formatter.format(new Date())).append("=").append(sb.toString()).append("=0");
+				//1代表不存在，0代表存在，相当于锁的存在
+				//sb.toString 这个key相当于一个锁 如果完成了就会把这个时间段的房间锁住
+				if (jedis.setnx(sb.toString(), "1")==1) {
+					String key = sb.toString().replaceAll("\\*", String.valueOf(user.getId()));
+					JedisUtils.setex(key, 5*60, jValue.toString());
+					//创建订单成功，插入数据库中，方便用户查看，付款的订单需要往userroom插入一份
+					Order order = new Order();
+					order.setUserId(user.getId());
+					order.setCheckInDate(formatter.parse(checkInDate));
+					order.setCheckOutDate(formatter.parse(checkOutDate));
+					order.setHotelId(Long.parseLong(hotelId));
+					order.setRoomId(Long.parseLong(roomId));
+					order.setPayOrNot(false);
+					order.setCreateDate(new Date());
+					//优化增加了一个createDate字段
+					orderService.insert(order);
+					
+					//todo:五分钟后查询数据库是否付款，如果没有付款就打开锁
+					//有个Bug 没删除的时候关闭服务器 timer又会重新从0开始计时
+					//todo:优化  后续用quatz实现第二重保障
+					Timer timer = new Timer();
+					timer.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							List<Boolean> payOrNots = selectPayOrNot(user.getId(), checkInDate, checkOutDate,Long.parseLong(hotelId),Long.parseLong(roomId));
+							for(Boolean payOrNot:payOrNots) {
+								if (payOrNot) {
+									this.cancel();
+									return;
+								}
+							}
+							jedis.del(sb.toString());
+							//增加一个订单状态orderType设置为失效
+							Order orderSetType = orderService.selectOne(order);
+							orderSetType.setOrderType("已失效");
+							orderService.updateOrderType(orderSetType);
+						}
+					},1000*60*5);
+				}else {
+					resp.getWriter().println("<script type='text/javascript'>alert('房间刚被抢走');history.go(-1);</script>");
+					return null;
+				}
+			}
+			//todo  将订单的信息查询出来给pay页面
+			Room room = roomService.selectOne(Long.valueOf(roomId));
+			Hotel hotel = hotelService.selectOne(Long.valueOf(hotelId));
+			ModelAndView modelAndView = new ModelAndView("room/pay");
+			modelAndView.addObject("roomName", room.getRoomName());
+			modelAndView.addObject("price", room.getPrice());
+			modelAndView.addObject("hotelName", hotel.getHotelName());
+			return modelAndView;
+		} finally {
+			jedis.close();
 		}
-		jedis.close();
-		//todo  将订单的信息查询出来给pay页面
-		Room room = roomService.selectOne(Long.valueOf(roomId));
-		Hotel hotel = hotelService.selectOne(Long.valueOf(hotelId));
-		ModelAndView modelAndView = new ModelAndView("room/pay");
-		modelAndView.addObject("roomName", room.getRoomName());
-		modelAndView.addObject("price", room.getPrice());
-		modelAndView.addObject("hotelName", hotel.getHotelName());
-		return modelAndView;
 	}
 	
 	private List<Boolean> selectPayOrNot(Long userId,String checkInDate,String checkOutDate,Long hotelId,Long roomId) {
