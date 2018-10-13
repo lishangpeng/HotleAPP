@@ -27,6 +27,7 @@ import com.alipay.api.request.AlipayTradeWapPayRequest;
 import redis.clients.jedis.Jedis;
 import top.lapa.web.pay.AlipayConfig;
 import top.lsp.util.JedisUtils;
+import top.lspa.mapper.OrderMapper;
 import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Order;
 import top.lspa.pojo.Room;
@@ -51,7 +52,7 @@ public class RoomController {
 	@RequestMapping(value="/order",method=RequestMethod.GET)
 	public ModelAndView orderPage(String hotelId,String roomId,String checkInDate,String checkOutDate,HttpServletResponse resp,HttpServletRequest req) throws IOException, ParseException {
 		//0代表未付款，1代表已经付款
-		//创建的格式 userId=hotelId=roomId=checkInDate=checkOutDate:date=userId=hotelId=roomId=checkInDate=checkOutDate=0
+		//创建的格式 userId=hotelId=roomId=checkInDate=checkOutDate=createDate:date=userId=hotelId=roomId=checkInDate=checkOutDate
 		//如果使用下划线不好分割
 		resp.setCharacterEncoding("UTF-8");
 		resp.setContentType("text/html;charset=UTF-8");
@@ -65,13 +66,25 @@ public class RoomController {
 	    sb.append(hotelId).append("=").append(roomId).append("=").append(checkInDate).append("=").append(checkOutDate);
 	    Jedis jedis = JedisUtils.getJedis();
 	    Set<String> set = jedis.keys(sb.toString()); 
-	    String value = null;
+	    String[] values = null;
 	    if (set.size()>0) {
-    		for(String str:set) {
-    			value = str;
-    		}
+	    	values = set.toArray(new String[set.size()]);
 	    }
-		if (value!=null) {
+	    //如果是自己则可以进入
+		if (values!=null) {
+			for(int i=0;i<values.length;i++) {
+				//房间是自己预定的就可以进入
+				if ((values[i].charAt(0)-'0') == user.getId()) {
+					Room room = roomService.selectOne(Long.valueOf(roomId));
+					Hotel hotel = hotelService.selectOne(Long.valueOf(hotelId));
+					ModelAndView modelAndView = new ModelAndView("room/pay");
+					modelAndView.addObject("roomName", room.getRoomName());
+					modelAndView.addObject("price", room.getPrice());
+					modelAndView.addObject("hotelName", hotel.getHotelName());
+					return modelAndView;
+				}
+			}
+			//这个房间不是自己预定的
 			resp.getWriter().println("<script type='text/javascript'>alert('手速慢了，刚被预定了');history.go(-1);</script>");
 			jedis.close();
 			return null;
@@ -79,10 +92,10 @@ public class RoomController {
 			StringBuilder jValue = new StringBuilder();
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			jValue.append(formatter.format(new Date())).append("=").append(sb.toString()).append("=0");
-			String key = sb.toString().replaceAll("\\*", String.valueOf(user.getId()));
 			//1代表不存在，0代表存在，相当于锁的存在
 			//sb.toString 这个key相当于一个锁 如果完成了就会把这个时间段的房间锁住
 			if (jedis.setnx(sb.toString(), "1")==1) {
+				String key = sb.toString().replaceAll("\\*", String.valueOf(user.getId()));
 				JedisUtils.setex(key, 5*60, jValue.toString());
 				//创建订单成功，插入数据库中，方便用户查看，付款的订单需要往userroom插入一份
 				Order order = new Order();
@@ -92,7 +105,10 @@ public class RoomController {
 				order.setHotelId(Long.parseLong(hotelId));
 				order.setRoomId(Long.parseLong(roomId));
 				order.setPayOrNot(false);
+				order.setCreateDate(new Date());
+				//优化增加了一个createDate字段
 				orderService.insert(order);
+				
 				//todo:五分钟后查询数据库是否付款，如果没有付款就打开锁
 				//有个Bug 没删除的时候关闭服务器 timer又会重新从0开始计时
 				//todo:优化  后续用quatz实现第二重保障
@@ -104,10 +120,14 @@ public class RoomController {
 						for(Boolean payOrNot:payOrNots) {
 							if (payOrNot) {
 								this.cancel();
-								break;
+								return;
 							}
 						}
 						jedis.del(sb.toString());
+						//增加一个订单状态orderType设置为失效
+						Order orderSetType = orderService.selectOne(order);
+						orderSetType.setOrderType("已失效");
+						orderService.updateOrderType(orderSetType);
 					}
 				},1000*5*60);
 			}else {

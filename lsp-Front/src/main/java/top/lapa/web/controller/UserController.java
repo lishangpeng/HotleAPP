@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.github.pagehelper.PageInfo;
 
 import top.lsp.util.AjaxResult;
 import top.lsp.util.CommonUtils;
@@ -241,35 +244,50 @@ public class UserController {
 		} finally {
 			solrClient.close();
 		}
-	}
+	}	
 	
 	//创建的格式 userId=hotelId=roomId=checkInDate=checkOutDate:date=userId=hotelId=roomId=checkInDate=checkOutDate=0
 	@RequestMapping(value="/userOrder",method=RequestMethod.GET)
-	public ModelAndView userOrder(HttpServletRequest req) throws ParseException {
+	public ModelAndView userOrder(HttpServletRequest req,Integer curr) throws ParseException {
 		User user = (User) req.getSession().getAttribute("user");
 		if (user == null) {
 			return new ModelAndView("redirect:/user/login");
 		}
+		if (curr == null ) {
+			curr = 1;
+		}
 		ModelAndView modelAndView = new ModelAndView("user/userOrder");
-		Order order= new Order();
-		order.setUserId(user.getId());
-		List<Order> orderList = orderService.selectList(order);
-		modelAndView.addObject("orderList", orderList);
+		PageInfo<Order> orderList = orderService.selectPage(curr, 4,user.getId());
+		modelAndView.addObject("pageInfo", orderList);
+		modelAndView.addObject("orderList", orderList.getList());
 		List<Room> roomList = new ArrayList<>();
 		List<Hotel> hotelList = new ArrayList<>();
 		//todo:查出酒店和房间的名字
-		for(Order ord:orderList) {
+		for(Order ord:orderList.getList()) {
 			Room room = roomService.selectOne(ord.getRoomId());
 			roomList.add(room);
 			
 			Hotel hotel = hotelService.selectOne(ord.getHotelId());
 			hotelList.add(hotel);
+			
+			if (ord.getOrderType() == null) {
+				ord.setOrderType("未付款");
+			}
 		}
 		
 		//调用redis 查询订单目前的状态，查询数据库查看是否付款
 		//key相等就是一种状态 而且order中的信息也相等
+		//orderId type
+		
+		modelAndView.addObject("roomList", roomList);
+		modelAndView.addObject("hotelList", hotelList);
+		return modelAndView;
+	}
+	
+	//提供一个方法判断订单状态（已经废弃）
+	private Map<String,String> orderType(List<Order> orderList){
 		Map<String,String> orderType = new HashMap<>();
-		Map<String, Order> filterOrder = new HashMap<>(); //过滤order 把key相同的放在一起
+		//orderId type
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		for(Order o:orderList) {
 			StringBuilder key = new StringBuilder();
@@ -279,22 +297,36 @@ public class UserController {
 			
 			if (o.getPayOrNot() == true) {
 				orderType.put(key.toString(),"已付款");
+				continue;
 			}
 			
-			filterOrder.put(key.toString(), o);
 			String value = JedisUtils.get(key.toString());
 			if (value == null) {
 				orderType.put(key.toString(),"已失效");
 			}else {
-				orderType.put(key.toString(),"未付款");
+				orderType.put(key.toString(),"未付款-"+o.getId());
 			}
 		}
 		
+		//未付款和已失效的判断
+		for(Entry<String, String> type:orderType.entrySet()) {
+			for(Entry<String, String> type2:orderType.entrySet()) {
+				if (type.getKey().equals(type2.getKey())&&type.getValue().equals("未付款")) {
+					String value = type.getKey();
+					String[] typeAndIds = value.split("-");
+					Date type1Date = orderService.selectOne(Long.parseLong(typeAndIds[0])).getCreateDate();
+					
+					String value2 = type.getKey();
+					String[] typeAndIds2 = value2.split("-");
+					Date type2Date = orderService.selectOne(Long.parseLong(typeAndIds2[0])).getCreateDate();
+					
+					if (type1Date.getTime()<type2Date.getTime()) {
+						type2.setValue("已经失效");
+					}
+				}
+			}	
+		}
 		
-		modelAndView.addObject("filterOrder", filterOrder);
-		modelAndView.addObject("orderType", orderType);
-		modelAndView.addObject("roomList", roomList);
-		modelAndView.addObject("hotelList", hotelList);
-		return modelAndView;
+		return orderType;
 	}
 }

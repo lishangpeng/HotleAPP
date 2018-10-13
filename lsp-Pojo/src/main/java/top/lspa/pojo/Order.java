@@ -9,9 +9,23 @@ public class Order implements Serializable{
 	private Long userId;
 	private Long hotelId;
 	private Long roomId;
+	private Date createDate;
 	private Date checkInDate;
 	private Date checkOutDate;
 	private Boolean payOrNot;
+	private String orderType;
+	public String getOrderType() {
+		return orderType;
+	}
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 	public Long getHotelId() {
 		return hotelId;
 	}

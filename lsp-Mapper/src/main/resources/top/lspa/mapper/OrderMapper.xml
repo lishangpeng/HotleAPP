@@ -11,6 +11,7 @@
 			<if test="payOrNot!=null">and payOrNot = #{payOrNot}</if>
 			<if test="hotelId!=null">and hotelId = #{hotelId}</if>
 			<if test="roomId!=null">and roomId = #{roomId}</if>
+			<if test="createDate!=null">and createDate = #{createDate}</if>
 	</select>
 	
 	<select id="selectPayOrNot" parameterType="Order" resultType="boolean">
@@ -20,7 +21,12 @@
 	</select>
 	
 	<insert id="insert" parameterType="Order">
-		insert into t_orders(userId,hotelId,roomId,checkInDate,checkOutDate,payOrNot,isDeleted)
-		values(#{userId},#{hotelId},#{roomId},#{checkInDate},#{checkOutDate},#{payOrNot},0)
+		insert into t_orders(userId,hotelId,roomId,checkInDate,checkOutDate,payOrNot,isDeleted,createDate)
+		values(#{userId},#{hotelId},#{roomId},#{checkInDate},#{checkOutDate},#{payOrNot},0,now())
 	</insert>
+	
+	<update id="updateOrderType" parameterType="Order">
+		update t_orders set orderType = #{orderType} 
+		where id = #{id}
+	</update>
 </mapper>

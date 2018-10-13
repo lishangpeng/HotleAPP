@@ -31,23 +31,25 @@
         </a>
  </div>
 
-        
+    <form action="<%=contxtPath%>/user/userOrder">
+    
+   
    <div class="container">
+    <input type="hidden" id="curr" name="curr" />
     <ul class="giftlist unstyled">
-      
-     <c:forEach items="${filterOrder }" var="mapEntry">
-		<fmt:formatDate value="${mapEntry.value.checkInDate }" var="inDate"  pattern="yyyy-MM-dd"/>
-		<fmt:formatDate value="${mapEntry.value.checkOutDate }" var="outDate"  pattern="yyyy-MM-dd"/>
+     <c:forEach items="${pageInfo.list }" var="order">
+		<fmt:formatDate value="${order.checkInDate }" var="inDate"  pattern="yyyy-MM-dd"/>
+		<fmt:formatDate value="${order.checkOutDate }" var="outDate"  pattern="yyyy-MM-dd"/>
 		  <li>
 		   <div class="imgbox">
-		   	<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><img src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"> </a> 
+		   	<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${order.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><img  style="height:202px" src="https://upload-lsp.oss-cn-hangzhou.aliyuncs.com/4bbc5c1e-877c-4801-94cb-a70467f8a4ec.jpg"> </a> 
 		   </div>
 		   <div class="desc">
 			<c:set var="flag" value="true"/>
 			<c:forEach items="${hotelList }" var="hotel">
-				<c:if test="${hotel.id eq mapEntry.value.hotelId }">
+				<c:if test="${hotel.id eq order.hotelId }">
 					<c:if test="${flag }">
-						<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}">${hotel.hotelName }</a>
+						<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${order.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}">${hotel.hotelName }</a>
 						<c:set var="flag" value="false"/>
 					</c:if>
 				</c:if>
@@ -55,45 +57,47 @@
 			
 			<c:set var="flag" value="true"/>
 			<c:forEach items="${roomList }" var="room">
-				<c:if test="${room.id eq mapEntry.value.roomId }">
+				<c:if test="${room.id eq order.roomId }">
 					<c:if test="${flag }">
-						<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}">${room.roomName }</a></br>
+						<a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${order.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}">${room.roomName }</a></br>
 						<c:set var="flag" value="false"/>
 					</c:if>
 				</c:if>
 			</c:forEach>
 			
-		     <c:forEach items="${orderType }" var="type">
-		     	<c:if test="${type.key eq mapEntry.key }">
-					<c:if test="${type.value eq '未付款' }">
-						<a href="#">
-							去付款
-						</a><br/>
-					</c:if>
-					<c:if test="${type.value eq '已付款' }">
-			     		<a href="javascript:void(0)">
-							<c:out value="${type.value }"></c:out>
-			    		</a> <br/>
-					</c:if>
-					<c:if test="${type.value eq '已失效' }">
-			     		<a href="javascript:void(0)">
-							<c:out value="${type.value }"></c:out>
-			    		</a> <br/>
-					</c:if>
-			    </c:if>
-		     </c:forEach>
-		     <a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><em>入住时间：
-		     	<fmt:formatDate value="${mapEntry.value.checkInDate }" pattern="yyyy-MM-dd" />
+				<fmt:formatDate value="${order.checkInDate }" var="inDate" pattern="yyyy-MM-dd"/>
+				<fmt:formatDate value="${order.checkOutDate }" var="outDate" pattern="yyyy-MM-dd"/>
+				<c:if test="${order.orderType eq '未付款' }">
+					<a href="<%=contxtPath %>/room/order?hotelId=${order.hotelId }&roomId=${order.roomId }&checkInDate=${inDate }&checkOutDate=${outDate}">
+						去付款
+					</a><br/>
+				</c:if>
+				<c:if test="${order.orderType eq '已付款' }">
+		     		<a href="javascript:void(0)">
+						<c:out value="${order.orderType }"></c:out>
+		    		</a> <br/>
+				</c:if>
+				<c:if test="${order.orderType eq '已失效' }">
+		     		<a href="javascript:void(0)">
+						<c:out value="${order.orderType }"></c:out>
+		    		</a> <br/>
+				</c:if>
+				
+				<fmt:formatDate value="${order.createDate }" var="createDate" pattern="yyy-MM-dd hh:mm:ss"/>
+				<em>创建时间：${createDate }</em><br/>
+
+		     <a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${order.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><em>入住时间：
+		     	<fmt:formatDate value="${order.checkInDate }" pattern="yyyy-MM-dd" />
 		     </em></a></br> 
-		     <a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${mapEntry.value.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><em>离开时间：
-		     <fmt:formatDate value="${mapEntry.value.checkOutDate }" pattern="yyyy-MM-dd" />
+		     <a href="<%=contxtPath%>/hotel/hotelInfo?hotelId=${order.hotelId }&checkInDate=${inDate }&checkOutDate=${outDate}"><em>离开时间：
+		     <fmt:formatDate value="${order.checkOutDate }" pattern="yyyy-MM-dd" />
 		     </em></a> 
 		  </div>
 		 </li>
      </c:forEach>
-         
     </ul>
    </div>
+    </form>
     <script type="text/javascript">
         $(document).ready(function () {
             $('.giftlist li img').each(function () {
@@ -109,21 +113,26 @@
             });
         });
     </script>
+   		<c:if test="${pageInfo.pages>1 }">
+           <div id="pagination" style="margin: 30px;"></div>
+           <script type="text/javascript" src="<%=contxtPath%>/Scripts/laypage/1.2/laypage.js"></script>
+           <script type="text/javascript">
+               laypage({
+                   cont:'pagination',
+                   pages:${pageInfo.pages},
+                   curr: ${pageInfo.pageNum},
+                   jump:function(obj,first){
+                       if(!first){
+                           $("#curr").val(obj.curr);
+                           $("form").submit();
+                       }
+                   }
+               });
+           </script>
+	</c:if>
 
 
-  <div class="footer">
-  <div class="gezifooter">
-      
-      <a href="login.aspx" class="ui-link">立即登陆</a> <font color="#878787">|</font> 
-       <a href="reg.aspx" class="ui-link">免费注册</a> <font color="#878787">|</font>                 
-                  
-
-       <a href="http://www.gridinn.com/@display=pc" class="ui-link">电脑版</a>
-  </div>
-  <div class="gezifooter">
-    <p style="color:#bbb;">格子微酒店连锁 &copy; 版权所有 2012-2014</p>
-  </div>
-  </div>
+<%@include file="../footer.jsp" %>
 
 </body>
 </html>
