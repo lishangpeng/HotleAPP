@@ -44,6 +44,18 @@
 		<property name="defaultEncoding" value="UTF-8" />
 		<property name="maxInMemorySize" value="40960" />
 	</bean>
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/"/>
+			<mvc:mapping path="/hotel/*"/>
+			<mvc:mapping path="/room/*"/>
+			<mvc:mapping path="/user/*"/>
+			<mvc:exclude-mapping path="/user/login"/>
+            <mvc:exclude-mapping path="/user/register"/>
+            <bean class="top.lapa.web.interceptor.AutoLoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
     
     <!-- 资源映射 -->
     <mvc:resources location="/Images/" mapping="/images/**" />

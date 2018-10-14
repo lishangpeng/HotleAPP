@@ -13,7 +13,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -137,7 +139,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/login",method=RequestMethod.POST)
-	public ModelAndView loginSubmit(String info,String password,HttpServletRequest req) {
+	public ModelAndView loginSubmit(String info,String password,HttpServletRequest req,HttpServletResponse resp) {
 		
 		ModelAndView modelAndView = new ModelAndView("user/login");
 		User user = new User();
@@ -157,6 +159,20 @@ public class UserController {
 			
 			if (user.getPassword().equals(CommonUtils.calculateMD5(user.getPasswordSalt()+password))) {
 				req.getSession().setAttribute("user", user);
+				
+				//添加到cookie，方便自动登录
+				int maxAge = 60 * 60 * 24 * 14;//14天
+				Cookie loginNameCookie = new Cookie("loginName", user.getPhoneNum());
+				loginNameCookie.setMaxAge(maxAge);
+				loginNameCookie.setPath("/");
+				resp.addCookie(loginNameCookie);
+				
+				Cookie passwordCookie = new Cookie("password", CommonUtils.calculateMD5(user.getPasswordSalt()+password));
+				passwordCookie.setMaxAge(maxAge);
+			    passwordCookie.setPath("/");
+			    resp.addCookie(passwordCookie);
+				
+				
 				return new ModelAndView("redirect:/");
 			}else {
 				modelAndView.addObject("message", "账号或者密码错误");
