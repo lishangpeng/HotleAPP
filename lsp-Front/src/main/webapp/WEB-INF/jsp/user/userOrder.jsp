@@ -77,7 +77,12 @@
 		     		<a href="javascript:void(0)">
 						<c:out value="${order.orderType }"></c:out>
 		    		</a> 
-		    		 <a href="<%=contxtPath %>/user/comment?hotelId=${order.hotelId }&roomId=${order.roomId }&checkInDate=${inDate }&checkOutDate=${outDate}">评论</a>
+		    		<c:if test="${order.commented }">
+		    			已评价
+		    		</c:if>
+		    		<c:if test="${not order.commented }">
+		    			 <a href="<%=contxtPath %>/user/comment?hotelId=${order.hotelId }&roomId=${order.roomId }&checkInDate=${inDate }&checkOutDate=${outDate}">去评论</a>
+		    		</c:if>
 		    		<br/>
 				</c:if>
 				<c:if test="${order.orderType eq '已失效' }">

@@ -14,6 +14,20 @@ public class Comment implements Serializable{
 	private Long roomId;
 	private String roomName;
 	private String phoneNum;
+	private Date checkInDate;//为了使这个评价 只有一次 
+	public Date getCheckInDate() {
+		return checkInDate;
+	}
+	public void setCheckInDate(Date checkInDate) {
+		this.checkInDate = checkInDate;
+	}
+	public Date getCheckOutDate() {
+		return checkOutDate;
+	}
+	public void setCheckOutDate(Date checkOutDate) {
+		this.checkOutDate = checkOutDate;
+	}
+	private Date checkOutDate;
 	public String getPhoneNum() {
 		return phoneNum;
 	}

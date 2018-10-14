@@ -296,11 +296,22 @@ public class UserController {
 			if (ord.getOrderType() == null) {
 				ord.setOrderType("未付款");
 			}
+			//判断是否评价过
+			Comment comment = new Comment();
+			comment.setUserId(user.getId());
+			comment.setCheckInDate(ord.getCheckInDate());
+			comment.setCheckOutDate(ord.getCheckInDate());
+			comment.setHotelId(ord.getHotelId());
+			comment.setRoomId(ord.getRoomId());
+			
+			if (commentService.isExisted(comment)) {
+				ord.setCommented(true);
+			}else {
+				ord.setCommented(false);
+			}
 		}
 		
-		//调用redis 查询订单目前的状态，查询数据库查看是否付款
-		//key相等就是一种状态 而且order中的信息也相等
-		//orderId type
+		
 		
 		modelAndView.addObject("roomList", roomList);
 		modelAndView.addObject("hotelList", hotelList);
@@ -408,6 +419,8 @@ public class UserController {
 		Room room = roomService.selectOne(order.getRoomId());
 		pojo.setRoomName(room.getRoomName());
 		pojo.setUserId(user.getId());
+		pojo.setCheckInDate(order.getCheckInDate());
+		pojo.setCheckOutDate(order.getCheckOutDate());
 		commentService.insert(pojo);
 		
 		ModelAndView modelAndView = new ModelAndView("redirect:/user/userOrder");

@@ -14,6 +14,14 @@ public class Order implements Serializable{
 	private Date checkOutDate;
 	private Boolean payOrNot;
 	private String orderType;
+	private Boolean commented;
+	
+	public Boolean getCommented() {
+		return commented;
+	}
+	public void setCommented(Boolean commented) {
+		this.commented = commented;
+	}
 	public String getOrderType() {
 		return orderType;
 	}

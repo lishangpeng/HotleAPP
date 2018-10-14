@@ -13,7 +13,7 @@
 	</select>
 	
 	<insert id="insert" parameterType="Comment">
-		insert into t_comments(hotelId,userId,createTime,comment,roomId,isDeleted,roomName,phoneNum)
-		values(#{hotelId},#{userId},#{createTime},#{comment},#{roomId},0,#{roomName},#{phoneNum})
+		insert into t_comments(hotelId,userId,createTime,comment,roomId,isDeleted,roomName,phoneNum,checkInDate,checkOutDate)
+		values(#{hotelId},#{userId},#{createTime},#{comment},#{roomId},0,#{roomName},#{phoneNum},#{checkInDate},#{checkOutDate})
 	</insert>
 </mapper>
