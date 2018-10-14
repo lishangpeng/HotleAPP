@@ -77,7 +77,7 @@
 		     		<a href="javascript:void(0)">
 						<c:out value="${order.orderType }"></c:out>
 		    		</a> 
-		    		 <a href="#">评论</a>
+		    		 <a href="<%=contxtPath %>/user/comment?hotelId=${order.hotelId }&roomId=${order.roomId }&checkInDate=${inDate }&checkOutDate=${outDate}">评论</a>
 		    		<br/>
 				</c:if>
 				<c:if test="${order.orderType eq '已失效' }">

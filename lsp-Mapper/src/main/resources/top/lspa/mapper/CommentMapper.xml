@@ -11,4 +11,9 @@
 			<if test="roomId!=null">and roomId=#{roomId}</if>
 			<if test="roomName!=null">and roomName like #{roomName}</if>
 	</select>
+	
+	<insert id="insert" parameterType="Comment">
+		insert into t_comments(hotelId,userId,createTime,comment,roomId,isDeleted,roomName,phoneNum)
+		values(#{hotelId},#{userId},#{createTime},#{comment},#{roomId},0,#{roomName},#{phoneNum})
+	</insert>
 </mapper>

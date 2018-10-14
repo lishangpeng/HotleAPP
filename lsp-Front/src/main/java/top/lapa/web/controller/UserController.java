@@ -6,11 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
@@ -25,11 +23,15 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.ModelAndViewDefiningException;
 
 import com.github.pagehelper.PageInfo;
 
@@ -37,10 +39,12 @@ import top.lsp.util.AjaxResult;
 import top.lsp.util.CommonUtils;
 import top.lsp.util.ImageCodeUtils;
 import top.lsp.util.JedisUtils;
+import top.lspa.pojo.Comment;
 import top.lspa.pojo.Hotel;
 import top.lspa.pojo.Order;
 import top.lspa.pojo.Room;
 import top.lspa.pojo.User;
+import top.lspa.service.CommentService;
 import top.lspa.service.HotelService;
 import top.lspa.service.OrderService;
 import top.lspa.service.RoomService;
@@ -61,6 +65,9 @@ public class UserController {
 	
 	@Autowired
 	private RoomService roomService;
+	
+	@Autowired
+	private CommentService commentService;
 	
 	@RequestMapping(value="/register",method=RequestMethod.GET)
 	public ModelAndView registerPage() {
@@ -301,6 +308,7 @@ public class UserController {
 	}
 	
 	//提供一个方法判断订单状态（已经废弃）
+	@Deprecated
 	private Map<String,String> orderType(List<Order> orderList){
 		Map<String,String> orderType = new HashMap<>();
 		//orderId type
@@ -344,5 +352,65 @@ public class UserController {
 		}
 		
 		return orderType;
+	}
+	
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+	}
+	
+	@RequestMapping(value="/comment",method=RequestMethod.GET)
+	public ModelAndView commentPage(Long hotelId,Long roomId,Date checkInDate,Date checkOutDate) {
+		ModelAndView modelAndView = new ModelAndView("/user/comment");
+		modelAndView.addObject("hotelId", hotelId);
+		modelAndView.addObject("roomId",roomId);
+		modelAndView.addObject("checkInDate",checkInDate);
+		modelAndView.addObject("checkOutDate", checkOutDate);
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/comment",method=RequestMethod.POST)
+	public ModelAndView commentSubmit(Order order,String comment,HttpServletResponse resp,HttpServletRequest req) throws IOException {
+		resp.setCharacterEncoding("UTF-8");
+		resp.setContentType("text/html;charset=UTF-8");
+		if (comment == null) {
+			resp.getWriter().print("<script type='text/javascript'>alert('评论不能为空');history.go(-1);</script>");
+			return null;
+		}
+		//判断这个用户能否评价这个酒店
+		User user = (User) req.getSession().getAttribute("user");
+		if (user == null) {
+			resp.getWriter().print("<script type='text/javascript'>alert('请点击下方登录');history.go(-1);</script>");
+			return null;
+		}
+		
+		order.setUserId(user.getId());
+		List<Boolean> list = orderService.selectPayOrNot(order);
+		boolean flag = false;
+		for(Boolean b : list) {
+			if (b) {
+				flag = true;
+				break;
+			}
+		}
+		if (!flag) {
+			resp.getWriter().print("<script type='text/javascript'>alert('你不能评价该酒店');history.go(-1);</script>");
+			return null;
+		}
+		
+		Comment pojo = new Comment();
+		pojo.setComment(comment);
+		pojo.setCreateTime(new Date());
+		pojo.setHotelId(order.getHotelId());
+		pojo.setPhoneNum(user.getPhoneNum());
+		pojo.setRoomId(order.getRoomId());
+		Room room = roomService.selectOne(order.getRoomId());
+		pojo.setRoomName(room.getRoomName());
+		pojo.setUserId(user.getId());
+		commentService.insert(pojo);
+		
+		ModelAndView modelAndView = new ModelAndView("redirect:/user/userOrder");
+		return modelAndView;
 	}
 }

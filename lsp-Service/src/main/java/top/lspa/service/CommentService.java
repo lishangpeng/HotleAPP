@@ -13,6 +13,7 @@ import top.lspa.pojo.Comment;
 public class CommentService extends BaseService<Comment>{
 	
 	public PageInfo<Comment> page(Integer curr,int pageSize,Long hotelId){
+		PageHelper.orderBy("createTime desc");
 		PageHelper.startPage(curr, pageSize);
 		Comment comment = new Comment();
 		comment.setHotelId(hotelId);

@@ -16,7 +16,7 @@
  </div>
 
         
-    <div class="container width80 pt20">
+<div class="container width80 pt20">
  <form name="aspnetForm" method="post" action="<%=contxtPath %>/user/register" id="aspnetForm" class="form-horizontal">
 
 <!-- 利用腾讯api 获取用户的地理位置 -->
