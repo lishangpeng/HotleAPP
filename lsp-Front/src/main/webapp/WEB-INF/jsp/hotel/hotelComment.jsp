@@ -15,7 +15,6 @@
             <span class="header-name">返回</span>
         </a>
  </div>
-
         
 <form name="aspnetForm" method="post" action="<%=contxtPath %>/hotel/hotelComment" id="aspnetForm">
 <div>
@@ -36,6 +35,10 @@
 </ul>
 <script type="text/javascript">
     $('#titleString').text($(document)[0].title);
+    
+    $(function(){
+    	$(".hotel-user-comment.hotel-apply-user-comment.none:eq(0)").removeClass("none");
+    })
 </script>
 
 <div class="hotel-comment-list">
@@ -55,7 +58,7 @@
 					<div class="hotel-apply-comment">
 						<div class="hotel-apply-div"><span class="hotel-user">店长回复</span></div>
 						<div class="hotel-user-comment-cotent">
-							<p></p>
+							<p>你舒服就好</p>
 					</div>
 					</div>
 		 </div>         
